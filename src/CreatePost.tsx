@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { UserContext } from "./App";
+import { router, UserContext } from "./App";
 import { supaClient } from "./supa-client";
 
 export interface CreatePostProps {
@@ -29,6 +29,7 @@ export function CreatePost({ newPostCreated = () => {} }: CreatePostProps) {
                 setTitle("");
                 setContent("");
                 newPostCreated();
+                window.location.reload();
               }
             });
         }}

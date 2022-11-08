@@ -12,7 +12,7 @@ import { UserContextProvider } from "@supabase/auth-ui-react/dist/esm/src/compon
 import { AllPosts, postLoader } from "./AllPosts";
 import { Welcome, welcomeLoader } from "./Welcome";
 
-const router = createBrowserRouter([
+export const router = createBrowserRouter([
   {
     path: "/",
     element: <Layout />,

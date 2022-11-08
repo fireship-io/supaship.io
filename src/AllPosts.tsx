@@ -7,7 +7,8 @@ interface PostData {
   id: string;
   title: string;
   score: number;
-  authorName: string;
+  username: string;
+  user_id: string;
 }
 
 export async function postLoader({
@@ -49,10 +50,10 @@ function Post({ postData }: { postData: PostData }) {
       </div>
       <Link to={`/message-board/post/${postData.id}`} className="flex-auto">
         <p>
-          Posted By {postData.authorName}{" "}
-          {timeAgo((postData as any).created_at)} ago
+          Posted By {postData.username} {timeAgo((postData as any).created_at)}{" "}
+          ago
         </p>
-        <p className="text-2xl">{postData.title}</p>
+        <h3 className="text-2xl">{postData.title}</h3>
       </Link>
     </div>
   );

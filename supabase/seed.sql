@@ -36,7 +36,7 @@ create table post_votes (
 create function update_post_score()
 returns trigger
 language plpgsql
-as $set_post_score$
+as $update_post_score$
 begin
 update post_score
         set score = (
@@ -46,12 +46,12 @@ update post_score
         )
         where post_id = new.post_id;
         return new;
-end;$set_post_score$;
+end;$update_post_score$;
 
 create trigger update_post_score 
     after insert or update
     on post_votes
-    for each row execute procedure set_post_score();
+    for each row execute procedure update_post_score();
 
 create function get_posts(page_number int)
 returns table (
@@ -59,61 +59,73 @@ returns table (
     user_id uuid,
     created_at timestamp with time zone,
     title text,
-    score int
+    score int,
+    username text
 )
 language plpgsql
 as $$
 begin
     return query
-    select p.id, p.user_id, p.created_at, pc.title, ps.score
-    from posts p
-    join post_contents pc on p.id = pc.post_id
-    join post_score ps on p.id = ps.post_id
-    order by p.created_at desc
+    select posts.id, posts.user_id, posts.created_at, post_contents.title, post_score.score, user_profiles.username
+    from posts
+    join post_contents on posts.id = post_contents.post_id
+    join post_score on posts.id = post_score.post_id
+    join user_profiles on posts.user_id = user_profiles.user_id
+    order by posts.created_at desc
     limit 10
     offset (page_number - 1) * 10;
-end;$$
+end;$$;
 
 create function create_new_post("userId" uuid, "title" text, "content" text)
 returns boolean
 language plpgsql
 as $$
 begin
-  with inserted_contents as (
-    with inserted_post as (
-      insert into posts ("user_id", "path")
+  with
+    "inserted_post" as (
+      insert into "posts" ("user_id", "path")
       values ($1, 'root')
       returning "id"
     )
-    insert into post_contents ("post_id", "title", "content")
-    values ((select "id" from inserted_contents), $2, $3)
-    returning "post_id"
-  )
-  insert into post_score ("post_id", "score") 
-  values ((select "post_id" from inserted_contents), 0);
-  commit;
+  insert into "post_contents" ("post_id", "title", "content")
+  values ((select "id" from "inserted_post"), $2, $3);
   return true;
-end; $$
+end; $$;
 
-CREATE POLICY "can see all" ON "public"."user_profiles"
-AS PERMISSIVE FOR SELECT
-TO public
-USING (true)
+create function initialize_post_score()
+returns trigger
+language plpgsql
+as $initialize_post_score$
+begin
+    insert into post_score (post_id, score)
+    values (new.id, 0);
+    return new;
+end;$initialize_post_score$;
 
-CREATE POLICY "can only insert your own" ON "public"."user_profiles"
-AS PERMISSIVE FOR INSERT
-TO public
+create trigger initialize_post_score 
+    after insert
+    on posts
+    for each row execute procedure initialize_post_score();
 
-WITH CHECK ((uid()=user_id))
+-- CREATE POLICY "can see all" ON "public"."user_profiles"
+-- AS PERMISSIVE FOR SELECT
+-- TO public
+-- USING (true);
 
-CREATE POLICY "can only insert your own" ON "public"."user_profiles"
-AS PERMISSIVE FOR INSERT
-TO public
+-- CREATE POLICY "can only insert your own" ON "public"."user_profiles"
+-- AS PERMISSIVE FOR INSERT
+-- TO public
 
-WITH CHECK ((auth.uid() = user_id))
+-- WITH CHECK ((auth.uid()=user_id));
 
-CREATE POLICY "can only update your own" ON "public"."user_profiles"
-AS PERMISSIVE FOR UPDATE
-TO public
-USING ((auth.uid() = user_id))
-WITH CHECK ((auth.uid() = user_id))
+-- CREATE POLICY "can only insert your own" ON "public"."user_profiles"
+-- AS PERMISSIVE FOR INSERT
+-- TO public
+
+-- WITH CHECK ((auth.uid() = user_id));
+
+-- CREATE POLICY "can only update your own" ON "public"."user_profiles"
+-- AS PERMISSIVE FOR UPDATE
+-- TO public
+-- USING ((auth.uid() = user_id))
+-- WITH CHECK ((auth.uid() = user_id));

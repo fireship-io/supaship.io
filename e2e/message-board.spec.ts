@@ -67,6 +67,10 @@ test.describe("Message Board", () => {
       await postSubmitButton.click();
       const post = page.locator("h3", { hasText: "Test Post" });
       await expect(post).toHaveCount(1);
+      const postedByMessage = page.locator("p", {
+        hasText: `Posted by ${testUserName}`,
+      });
+      await expect(postedByMessage).toHaveCount(1);
     });
   });
 });

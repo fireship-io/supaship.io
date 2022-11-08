@@ -63,10 +63,12 @@ language plpgsql
 as $$
 begin
     return query
-    select p.id, p.user_id, p.created_at, pc.title, ps.score
-    from posts p
-    join post_contents pc on p.id = pc.post_id
-    join post_score ps on p.id = ps.post_id
+    select posts.id, posts.user_id, posts.created_at, post_contents.title, post_score.score, user_profiles.username
+    from posts
+    join post_contents on posts.id = post_contents.post_id
+    join post_score on posts.id = post_score.post_id
+    join user_profiles on posts.user_id = user_profiles.user_id
+    where p.path <@ 'root' || page_number::text
     order by p.created_at desc
     limit 10
     offset (page_number - 1) * 10;
