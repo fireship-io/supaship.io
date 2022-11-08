@@ -1,0 +1,49 @@
+@import url("https://use.typekit.net/rcr1opg.css");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  display: block;
+  font-size: 13px;
+  @media (min-width: 1024px) {
+    font-size: 16px;
+  }
+}
+
+body {
+  @apply bg-gray-700 text-gray-100;
+  background: linear-gradient(
+    176deg,
+    rgba(18, 24, 27, 1) 50%,
+    rgba(32, 39, 55, 1) 100%
+  );
+  min-height: 100vh;
+  background-attachment: fixed;
+  @include scrollbar;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  @apply font-display font-normal text-white text-2xl;
+}
+
+p {
+  @apply font-display font-normal text-white;
+}
+
+svg {
+  width: auto;
+}
+
+.container {
+  @apply max-w-screen-2xl mx-auto px-3 md:px-8;
+}
+
+.grid-list {
+  @apply grid grid-cols-1 auto-cols-max gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 list-none;
+}
