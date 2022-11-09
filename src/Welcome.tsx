@@ -76,7 +76,7 @@ export function Welcome() {
                   setServerError("");
                 }
               }}
-              className="text-2xl font-display font-normal rounded border-2 text-color-green-400 border-green-400 p-2 m-4 text-center"
+              className="text-2xl font-display rounded border-2 text-color-green-400 border-green-400 p-2 m-4 text-center text-green-400 drop-shadow-[0_0_9px_rgba(34,197,94,0.9)] m-4 text-center text-3xl"
             ></input>
             {formIsDirty && (invalidString || serverError) && (
               <p className="text-red-400 validation-feedback text-center">
