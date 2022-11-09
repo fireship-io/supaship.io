@@ -42,6 +42,7 @@ module.exports = {
       },
       width: {
         128: "32rem",
+        512: "128rem",
       },
       typography: {
         DEFAULT: {

@@ -9,8 +9,9 @@ import NavBar from "./NavBar";
 import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 import MessageBoard from "./MessageBoard";
 import { UserContextProvider } from "@supabase/auth-ui-react/dist/esm/src/components/Auth/UserContext";
-import { AllPosts, postLoader } from "./AllPosts";
+import { AllPosts, allPostsLoader } from "./AllPosts";
 import { Welcome, welcomeLoader } from "./Welcome";
+import { postDetailLoader, PostView } from "./Post";
 
 export const router = createBrowserRouter([
   {
@@ -24,7 +25,12 @@ export const router = createBrowserRouter([
           {
             path: ":pageNumber",
             element: <AllPosts />,
-            loader: postLoader as any,
+            loader: allPostsLoader as any,
+          },
+          {
+            path: "post/:postId",
+            element: <PostView />,
+            loader: postDetailLoader as any,
           },
         ],
       },

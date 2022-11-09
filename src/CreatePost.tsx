@@ -1,4 +1,5 @@
 import { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { router, UserContext } from "./App";
 import { supaClient } from "./supa-client";
 
@@ -10,10 +11,11 @@ export function CreatePost({ newPostCreated = () => {} }: CreatePostProps) {
   const user = useContext(UserContext);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const navigate = useNavigate();
   return (
     <>
       <form
-        className="rounded border-2"
+        className="rounded border-2 p-4 ml-4 flex flex-col justify-start gap-4 mb-8"
         onSubmit={(event) => {
           event.preventDefault();
           supaClient
@@ -22,34 +24,45 @@ export function CreatePost({ newPostCreated = () => {} }: CreatePostProps) {
               title,
               content,
             })
-            .then(({ error }) => {
+            .then(({ data, error }) => {
               if (error) {
                 console.log(error);
               } else {
                 setTitle("");
                 setContent("");
                 newPostCreated();
+                // need to send to creaetd post later
                 window.location.reload();
               }
             });
         }}
       >
+        <h3>Create A New Post</h3>
         <input
           type="text"
           name="title"
-          placeholder="Title"
+          className="text-gray-800 p-2 rounded text-xl"
+          placeholder="Your Title Here"
           onChange={({ target: { value } }) => {
             setTitle(value);
           }}
         />
         <textarea
           name="contents"
-          placeholder="Your contents here"
+          placeholder="Your content here"
+          className="text-gray-800 p-4 rounded h-24"
           onChange={({ target: { value } }) => {
             setContent(value);
           }}
         />
-        <button type="submit">Submit</button>
+        <div>
+          <button
+            type="submit"
+            className="bg-green-400 rounded font-display text-lg p-2"
+          >
+            Submit
+          </button>
+        </div>
       </form>
     </>
   );

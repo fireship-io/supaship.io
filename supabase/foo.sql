@@ -73,3 +73,28 @@ begin
     limit 10
     offset (page_number - 1) * 10;
 end;$$
+
+create function get_single_post_with_comments(post_id uuid)
+returns table (
+    id uuid,
+    author_name uuid,
+    created_at timestamp with time zone,
+    title text,
+    content text,
+    score int,
+    path ltree,
+)
+language plpgsql
+as $$
+begin
+    return query
+    select posts.id, posts.user_id, posts.created_at, post_contents.title, post_score.score, user_profiles.username
+    from posts
+    join post_contents on posts.id = post_contents.post_id
+    join post_score on posts.id = post_score.post_id
+    join user_profiles on posts.user_id = user_profiles.user_id
+    where p.path <@ post_id
+    -- order by p.created_at desc
+    -- limit 10
+    -- offset (page_number - 1) * 10;
+end;$$
