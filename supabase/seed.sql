@@ -19,6 +19,7 @@ create table post_score (
 
 create table post_contents (
     id uuid primary key default uuid_generate_v4() not null,
+    user_id uuid references auth.users (id) not null,
     post_id uuid references posts (id) not null,
     title text,
     content text,
@@ -36,6 +37,8 @@ create table post_votes (
 create function update_post_score()
 returns trigger
 language plpgsql
+security definer
+set search_path = public
 as $update_post_score$
 begin
 update post_score
@@ -88,14 +91,16 @@ begin
       values ($1, 'root')
       returning "id"
     )
-  insert into "post_contents" ("post_id", "title", "content")
-  values ((select "id" from "inserted_post"), $2, $3);
+  insert into "post_contents" ("post_id", "title", "content", "user_id")
+  values ((select "id" from "inserted_post"), $2, $3, $1);
   return true;
 end; $$;
 
 create function initialize_post_score()
 returns trigger
 language plpgsql
+security definer
+set search_path = public
 as $initialize_post_score$
 begin
     insert into post_score (post_id, score)
@@ -151,8 +156,8 @@ begin
       values ($1, $3)
       returning id
     )
-  insert into post_contents (post_id, title, content)
-  values ((select id from inserted_post), '', $2);
+  insert into post_contents (post_id, title, content, user_id)
+  values ((select id from inserted_post), '', $2, $1);
   return true;
 end; $$;
 
@@ -178,3 +183,67 @@ end; $$;
 -- TO public
 -- USING ((auth.uid() = user_id))
 -- WITH CHECK ((auth.uid() = user_id));
+
+alter table user_profiles enable row level security;
+alter table posts enable row level security;
+alter table post_contents enable row level security;
+alter table post_score enable row level security;
+alter table post_votes enable row level security;
+
+CREATE POLICY "all can see" ON "public"."post_contents"
+AS PERMISSIVE FOR SELECT
+TO public
+USING (true);
+
+CREATE POLICY "authors can create" ON "public"."post_contents"
+AS PERMISSIVE FOR INSERT
+TO public
+WITH CHECK (auth.uid()=user_id);
+
+CREATE POLICY "all can see" ON "public"."post_score"
+AS PERMISSIVE FOR SELECT
+TO public
+USING (true);
+
+CREATE POLICY "all can see" ON "public"."post_votes"
+AS PERMISSIVE FOR SELECT
+TO public
+USING (true);
+
+CREATE POLICY "owners can insert" ON "public"."post_votes"
+AS PERMISSIVE FOR INSERT
+TO public
+WITH CHECK (auth.uid()=user_id);
+
+CREATE POLICY "owners can update" ON "public"."post_votes"
+AS PERMISSIVE FOR UPDATE
+TO public
+USING (auth.uid()=user_id)
+WITH CHECK (auth.uid()=user_id);
+
+CREATE POLICY "all can see" ON "public"."posts"
+AS PERMISSIVE FOR SELECT
+TO public
+USING (true);
+
+CREATE POLICY "owners can insert" ON "public"."posts"
+AS PERMISSIVE FOR INSERT
+TO public
+WITH CHECK (auth.uid()=user_id);
+
+CREATE POLICY "all can see" ON "public"."user_profiles"
+AS PERMISSIVE FOR SELECT
+TO public
+USING (true);
+
+CREATE POLICY "users can insert" ON "public"."user_profiles"
+AS PERMISSIVE FOR INSERT
+TO public
+WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "owners can update" ON "public"."user_profiles"
+AS PERMISSIVE FOR UPDATE
+TO public
+USING (auth.uid()=user_id)
+WITH CHECK (auth.uid()=user_id);
+
