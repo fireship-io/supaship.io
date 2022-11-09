@@ -1,5 +1,6 @@
 import { useContext, useMemo, useState } from "react";
 import { useLoaderData } from "react-router-dom";
+import { castVote } from "./AllPosts";
 import { UserContext } from "./App";
 import { supaClient } from "./supa-client";
 import { timeAgo } from "./time-ago";
@@ -65,9 +66,39 @@ export function PostView() {
     <div className="flex flex-col place-content-center">
       <div className="flex text-white ml-4 my-4 border-l-2 rounded grow">
         <div className="flex flex-col bg-gray-800 p-2 h-full rounded">
-          <UpVote direction="up" filled={false} enabled={!!session} />
-          <p className="text-center">{post.score}</p>
-          <UpVote direction="down" filled={false} enabled={!!session} />
+          <UpVote
+            direction="up"
+            filled={false}
+            enabled={!!session}
+            onClick={async () => {
+              await castVote({
+                postId: post.id,
+                userId: session?.user.id as string,
+                voteType: "up",
+                onSuccess: () => {
+                  window.location.reload();
+                },
+              });
+            }}
+          />
+          <p className="text-center" data-e2e="upvote-count">
+            {post.score}
+          </p>
+          <UpVote
+            direction="down"
+            filled={false}
+            enabled={!!session}
+            onClick={async () => {
+              await castVote({
+                postId: post.id,
+                userId: session?.user.id as string,
+                voteType: "down",
+                onSuccess: () => {
+                  window.location.reload();
+                },
+              });
+            }}
+          />
         </div>
 
         <div className="grid m-2 w-full">
@@ -102,9 +133,39 @@ function CommentView({ comment }: { comment: Comment }) {
       >
         <div className="flex w-full grow">
           <div className="flex flex-col grow-0 bg-gray-800 p-2 h-full rounded">
-            <UpVote direction="up" filled={false} enabled={!!session} />
-            <p className="text-center">{comment.score}</p>
-            <UpVote direction="down" filled={false} enabled={!!session} />
+            <UpVote
+              direction="up"
+              filled={false}
+              enabled={!!session}
+              onClick={async () => {
+                await castVote({
+                  postId: comment.id,
+                  userId: session?.user.id as string,
+                  voteType: "up",
+                  onSuccess: () => {
+                    window.location.reload();
+                  },
+                });
+              }}
+            />
+            <p className="text-center" data-e2e="upvote-count">
+              {comment.score}
+            </p>
+            <UpVote
+              direction="down"
+              filled={false}
+              enabled={!!session}
+              onClick={async () => {
+                await castVote({
+                  postId: comment.id,
+                  userId: session?.user.id as string,
+                  voteType: "down",
+                  onSuccess: () => {
+                    window.location.reload();
+                  },
+                });
+              }}
+            />
           </div>
           <div className="grid grid-cols-1 ml-2 my-2 w-full">
             <p>

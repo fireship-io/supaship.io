@@ -1,5 +1,11 @@
 import test, { expect, Page } from "@playwright/test";
-import { login, setupE2eTest, signUp } from "./utils";
+import {
+  createComment,
+  createPost,
+  login,
+  setupE2eTest,
+  signUp,
+} from "./utils";
 
 const testUserEmail = "test@test.io";
 const testUserPassword = "test123567";
@@ -143,25 +149,3 @@ test.describe("Message Board", () => {
     });
   });
 });
-
-async function createPost(page: Page, title: string, contents: string) {
-  page.goto("http://localhost:5173/message-board/1");
-  const postTitleInput = page.locator(`input[name="title"]`);
-  const postContentsInput = page.locator(`textarea[name="contents"]`);
-  const postSubmitButton = page.locator(`button[type="submit"]`);
-  await postTitleInput.fill(title);
-  await postContentsInput.fill(contents);
-  await postSubmitButton.click();
-  const post = page.locator("h3", { hasText: title });
-  await expect(post).toHaveCount(1);
-  return post;
-}
-
-async function createComment(page: Page, comment: string) {
-  const commentInput = page.locator(`textarea[name="comment"]`);
-  const commentSubmitButton = page.locator(`button[type="submit"]`);
-  await commentInput.fill(comment);
-  await commentSubmitButton.click();
-  const createdComment = page.locator("p", { hasText: comment });
-  await expect(createdComment).toHaveCount(1);
-}
