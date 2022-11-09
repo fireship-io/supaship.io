@@ -68,6 +68,9 @@ export function AllPosts() {
             key={post.id}
             postData={post}
             myVote={myVotes?.[post.id] || undefined}
+            onVoteSuccess={() => {
+              setBumper(bumper + 1);
+            }}
           />
         ))}
       </div>
@@ -78,9 +81,11 @@ export function AllPosts() {
 function Post({
   postData,
   myVote,
+  onVoteSuccess,
 }: {
   postData: PostData;
   myVote: "up" | "down" | undefined;
+  onVoteSuccess: () => void;
 }) {
   const { session } = useContext(UserContext);
   return (
@@ -97,7 +102,7 @@ function Post({
               userId: session?.user.id as string,
               voteType: "up",
               onSuccess: () => {
-                window.location.reload();
+                onVoteSuccess();
               },
             });
           }}
@@ -115,7 +120,7 @@ function Post({
               userId: session?.user.id as string,
               voteType: "down",
               onSuccess: () => {
-                window.location.reload();
+                onVoteSuccess();
               },
             });
           }}

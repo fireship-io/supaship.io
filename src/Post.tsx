@@ -80,16 +80,17 @@ export function PostView() {
     post: null,
     comments: [],
   });
+  const [bumper, setBumper] = useState(0);
   useEffect(() => {
     postDetailLoader({ params, userContext }).then((newPostDetailData) => {
       if (newPostDetailData) {
         setPostDetailData(newPostDetailData);
       }
     });
-  }, [userContext, params]);
+  }, [userContext, params, bumper]);
   const nestedComments = useMemo(
     () => unsortedCommentsToNested(postDetailData.comments),
-    [postDetailData.comments]
+    [postDetailData]
   );
   return (
     <div className="flex flex-col place-content-center">
@@ -112,7 +113,7 @@ export function PostView() {
                 userId: userContext.session?.user.id as string,
                 voteType: "up",
                 onSuccess: () => {
-                  window.location.reload();
+                  setBumper(bumper + 1);
                 },
               });
             }}
@@ -137,7 +138,7 @@ export function PostView() {
                 userId: userContext.session?.user.id as string,
                 voteType: "down",
                 onSuccess: () => {
-                  window.location.reload();
+                  setBumper(bumper + 1);
                 },
               });
             }}
@@ -158,13 +159,21 @@ export function PostView() {
             {postDetailData.post?.content}
           </p>
           {userContext.session && postDetailData.post && (
-            <CreateComment parent={postDetailData.post} />
+            <CreateComment
+              parent={postDetailData.post}
+              onSuccess={() => {
+                setBumper(bumper + 1);
+              }}
+            />
           )}
           {nestedComments.map((comment) => (
             <CommentView
               key={comment.id}
               comment={comment}
               myVotes={postDetailData.myVotes}
+              onVoteSuccess={() => {
+                setBumper(bumper + 1);
+              }}
             />
           ))}
         </div>
@@ -176,9 +185,11 @@ export function PostView() {
 function CommentView({
   comment,
   myVotes,
+  onVoteSuccess,
 }: {
   comment: Comment;
   myVotes: Record<string, "up" | "down" | undefined> | undefined;
+  onVoteSuccess: () => void;
 }) {
   const [commenting, setCommenting] = useState(false);
   const { session } = useContext(UserContext);
@@ -200,7 +211,7 @@ function CommentView({
                   userId: session?.user.id as string,
                   voteType: "up",
                   onSuccess: () => {
-                    window.location.reload();
+                    onVoteSuccess();
                   },
                 });
               }}
@@ -218,7 +229,7 @@ function CommentView({
                   userId: session?.user.id as string,
                   voteType: "down",
                   onSuccess: () => {
-                    window.location.reload();
+                    onVoteSuccess();
                   },
                 });
               }}
@@ -238,6 +249,7 @@ function CommentView({
               <CreateComment
                 parent={comment}
                 onCancel={() => setCommenting(false)}
+                onSuccess={() => onVoteSuccess()}
               />
             )}
             {!commenting && (
@@ -256,6 +268,7 @@ function CommentView({
                 key={childComment.id}
                 comment={childComment}
                 myVotes={myVotes}
+                onVoteSuccess={() => onVoteSuccess()}
               />
             ))}
           </div>
@@ -268,9 +281,11 @@ function CommentView({
 function CreateComment({
   parent,
   onCancel,
+  onSuccess,
 }: {
   parent: DepthFirstComment | Post;
   onCancel?: () => void;
+  onSuccess: () => void;
 }) {
   const user = useContext(UserContext);
   const [comment, setComment] = useState("");
@@ -291,7 +306,7 @@ function CreateComment({
               if (error) {
                 console.log(error);
               } else {
-                window.location.reload();
+                onSuccess();
               }
             });
         }}
