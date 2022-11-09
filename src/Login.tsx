@@ -50,13 +50,14 @@ export default function Login() {
         contents={
           <>
             <Auth
+              providers={["google"]}
               supabaseClient={supaClient}
               appearance={{
                 theme: ThemeSupa,
                 className: {
                   container: "grid grid-cols-1 place-content-center",
                   label: "text-white text-xl font-display",
-                  button: "text-white text-xl font-display",
+                  button: "text-black text-xl font-display",
                   input:
                     "text-2xl font-display font-normal rounded border-2 text-green-400 border-green-400 p-2 m-4 text-center drop-shadow-[0_0_9px_rgba(34,197,94,0.9)] bg-white",
                 },

@@ -13,6 +13,7 @@ import { AllPosts, allPostsLoader } from "./AllPosts";
 import { Welcome, welcomeLoader } from "./Welcome";
 import { postDetailLoader, PostView } from "./Post";
 import Home from "./Home";
+import PrivacyPolicy from "./PrivacyPolicy";
 
 export const router = createBrowserRouter([
   {
@@ -41,6 +42,7 @@ export const router = createBrowserRouter([
         element: <Welcome />,
         loader: welcomeLoader,
       },
+      { path: "privacy-policy", element: <PrivacyPolicy /> },
     ],
   },
 ]);

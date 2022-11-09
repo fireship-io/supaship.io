@@ -15,7 +15,7 @@ export default function NavBar() {
           <img
             id="logo"
             className="hover:scale-125 transition hover:drop-shadow-[0_0_9px_rgba(34,197,94,0.9)] w-64 mt-4"
-            src="supaship_logo_with_text.svg"
+            src="https://supaship.io/supaship_logo_with_text.svg"
             alt="logo"
           />
         </Link>
@@ -29,11 +29,17 @@ export default function NavBar() {
               className="font-display text-base font-normal text-green-500 border-green-400 border rounded-md px-2 py-1 hover:drop-shadow-[0_0_9px_rgba(34,197,94,0.9)] flex"
               onClick={() => setShowProDialog(true)}
             >
-              <img className="h-6 mr-2" src="supaship_logo.svg" />
+              <img
+                className="h-6 mr-2"
+                src="https://supaship.io/supaship_logo.svg"
+              />
               <span className="inline-block">
                 get the course to build this site on fireship pro
               </span>
-              <img className="h-6 ml-2" src="supaship_logo.svg" />
+              <img
+                className="h-6 ml-2"
+                src="https://supaship.io/supaship_logo.svg"
+              />
             </button>
           </li>
           {/* <li className="mx-2 md:mx-4 hover:scale-105 transition-transform">
