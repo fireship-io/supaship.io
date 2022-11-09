@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "postinstall": "yarn add -D supabase"
   },
   "dependencies": {
     "@supabase/auth-ui-react": "^0.2.5",
