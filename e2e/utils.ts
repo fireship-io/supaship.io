@@ -30,7 +30,7 @@ export async function signUp(
   userName: string,
   skipUserName = false
 ) {
-  const signUpButton = page.locator("button", { hasText: "Sign Up" });
+  const signUpButton = page.locator("button", { hasText: "Sign Up" }).first();
   await signUpButton.click();
   const emailInput = page.locator('input[name="email"]');
   await emailInput.fill(email);

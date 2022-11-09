@@ -22,36 +22,46 @@ test.describe("Message Board", () => {
     await signUp(page, testUserEmail, testUserPassword, testUserName);
     const post = await createPost(page, "test post", "test contents");
     const upvoteButton = page.locator(`[data-e2e="upvote"]`);
+    const downvoteButton = page.locator(`[data-e2e="downvote"]`);
     await expect(upvoteButton).toHaveCount(1);
     await upvoteButton.click();
     const upvoteCount = page.locator(`[data-e2e="upvote-count"]`);
     await expect(upvoteCount).toHaveText("1");
-    // add when filled is in
-    // const filledUpvoteButton = post.locator(
-    //   `[data-e2e="upvote"][data-filled="true"]`
-    // );
-    // await expect(filledUpvoteButton).toHaveCount(1);
-    const downvoteButton = page.locator(`[data-e2e="downvote"]`);
+    const filledUpvoteButton = page.locator(
+      `[data-e2e="upvote"][data-filled="true"]`
+    );
+    const filledDownvoteButton = page.locator(
+      `[data-e2e="downvote"][data-filled="true"]`
+    );
+    await expect(filledUpvoteButton).toHaveCount(1);
+    await expect(filledDownvoteButton).toHaveCount(0);
     await downvoteButton.click();
     await expect(upvoteCount).toHaveText("-1");
+    await expect(filledDownvoteButton).toHaveCount(1);
+    await expect(filledUpvoteButton).toHaveCount(0);
   });
   test("upvoting works on post in post page", async ({ page }) => {
     await signUp(page, testUserEmail, testUserPassword, testUserName);
     const post = await createPost(page, "test post", "test contents");
     await post.click();
     const upvoteButton = page.locator(`[data-e2e="upvote"]`);
+    const downvoteButton = page.locator(`[data-e2e="downvote"]`);
     await expect(upvoteButton).toHaveCount(1);
     await upvoteButton.click();
     const upvoteCount = page.locator(`[data-e2e="upvote-count"]`);
     await expect(upvoteCount).toHaveText("1");
-    // add when filled is in
-    // const filledUpvoteButton = post.locator(
-    //   `[data-e2e="upvote"][data-filled="true"]`
-    // );
-    // await expect(filledUpvoteButton).toHaveCount(1);
-    const downvoteButton = page.locator(`[data-e2e="downvote"]`);
+    const filledUpvoteButton = page.locator(
+      `[data-e2e="upvote"][data-filled="true"]`
+    );
+    const filledDownvoteButton = page.locator(
+      `[data-e2e="downvote"][data-filled="true"]`
+    );
+    await expect(filledUpvoteButton).toHaveCount(1);
+    await expect(filledDownvoteButton).toHaveCount(0);
     await downvoteButton.click();
     await expect(upvoteCount).toHaveText("-1");
+    await expect(filledDownvoteButton).toHaveCount(1);
+    await expect(filledUpvoteButton).toHaveCount(0);
   });
   test("upvoting works on comment in post page", async ({ page }) => {
     await signUp(page, testUserEmail, testUserPassword, testUserName);
@@ -68,13 +78,18 @@ test.describe("Message Board", () => {
       await expect(upvoteCount.nth(i)).toHaveText("0");
       await upvoteButton.nth(i).click();
       await expect(upvoteCount.nth(i)).toHaveText("1");
-      // add when filled is in
-      // const filledUpvoteButton = post.locator(
-      //   `[data-e2e="upvote"][data-filled="true"]`
-      // );
-      // await expect(filledUpvoteButton).toHaveCount(1);
+      const filledUpvoteButton = page.locator(
+        `[data-e2e="upvote"][data-filled="true"]`
+      );
+      const filledDownvoteButton = page.locator(
+        `[data-e2e="downvote"][data-filled="true"]`
+      );
+      await expect(filledUpvoteButton).toHaveCount(1);
+      await expect(filledDownvoteButton).toHaveCount(i);
       await downvoteButton.nth(i).click();
       await expect(upvoteCount.nth(i)).toHaveText("-1");
+      await expect(filledDownvoteButton).toHaveCount(i + 1);
+      await expect(filledUpvoteButton).toHaveCount(0);
     }
   });
 });

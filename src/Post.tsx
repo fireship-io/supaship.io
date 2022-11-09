@@ -1,10 +1,11 @@
-import { useContext, useMemo, useState } from "react";
-import { useLoaderData } from "react-router-dom";
+import { useContext, useEffect, useMemo, useState } from "react";
+import { useLoaderData, useParams } from "react-router-dom";
 import { castVote } from "./AllPosts";
 import { UserContext } from "./App";
 import { supaClient } from "./supa-client";
 import { timeAgo } from "./time-ago";
 import { UpVote } from "./UpVote";
+import { SupashipUserInfo } from "./use-session";
 
 export interface Post {
   id: string;
@@ -30,15 +31,18 @@ export interface Comment {
 
 export type DepthFirstComment = Omit<Comment, "comments"> & { depth: number };
 
-interface PostDetailLoaderData {
-  post: Post;
+interface PostDetailData {
+  post: Post | null;
   comments: DepthFirstComment[];
+  myVotes?: Record<string, "up" | "down" | undefined>;
 }
 
 export async function postDetailLoader({
   params: { postId },
+  userContext,
 }: {
   params: { postId: string };
+  userContext: SupashipUserInfo;
 }) {
   const { data, error } = await supaClient
     .rpc("get_single_post_with_comments", { post_id: postId })
@@ -52,15 +56,40 @@ export async function postDetailLoader({
   }, {} as Record<string, Post>);
   const post = postMap[postId];
   const comments = data.filter((x) => x.id !== postId);
-  return { post, comments };
+  if (!userContext.session?.user) {
+    return { post, comments };
+  }
+  const { data: votesData } = await supaClient
+    .from("post_votes")
+    .select("*")
+    .eq("user_id", userContext.session?.user.id);
+  if (!votesData) {
+    return;
+  }
+  const votes = votesData.reduce((acc, vote) => {
+    acc[vote.post_id] = vote.vote_type;
+    return acc;
+  }, {} as Record<string, "up" | "down" | undefined>);
+  return { post, comments, myVotes: votes };
 }
 
 export function PostView() {
-  const { session } = useContext(UserContext);
-  const { post, comments } = useLoaderData() as PostDetailLoaderData;
+  const userContext = useContext(UserContext);
+  const params = useParams() as { postId: string };
+  const [postDetailData, setPostDetailData] = useState<PostDetailData>({
+    post: null,
+    comments: [],
+  });
+  useEffect(() => {
+    postDetailLoader({ params, userContext }).then((newPostDetailData) => {
+      if (newPostDetailData) {
+        setPostDetailData(newPostDetailData);
+      }
+    });
+  }, [userContext, params]);
   const nestedComments = useMemo(
-    () => unsortedCommentsToNested(comments),
-    [comments]
+    () => unsortedCommentsToNested(postDetailData.comments),
+    [postDetailData.comments]
   );
   return (
     <div className="flex flex-col place-content-center">
@@ -68,12 +97,19 @@ export function PostView() {
         <div className="flex flex-col bg-gray-800 p-2 h-full rounded">
           <UpVote
             direction="up"
-            filled={false}
-            enabled={!!session}
+            filled={
+              postDetailData.myVotes &&
+              postDetailData.post &&
+              postDetailData.myVotes[postDetailData.post.id] === "up"
+            }
+            enabled={!!userContext.session}
             onClick={async () => {
+              if (!postDetailData.post) {
+                return;
+              }
               await castVote({
-                postId: post.id,
-                userId: session?.user.id as string,
+                postId: postDetailData.post.id,
+                userId: userContext.session?.user.id as string,
                 voteType: "up",
                 onSuccess: () => {
                   window.location.reload();
@@ -82,16 +118,23 @@ export function PostView() {
             }}
           />
           <p className="text-center" data-e2e="upvote-count">
-            {post.score}
+            {postDetailData.post?.score}
           </p>
           <UpVote
             direction="down"
-            filled={false}
-            enabled={!!session}
+            filled={
+              postDetailData.myVotes &&
+              postDetailData.post &&
+              postDetailData.myVotes[postDetailData.post.id] === "down"
+            }
+            enabled={!!userContext.session}
             onClick={async () => {
+              if (!postDetailData.post) {
+                return;
+              }
               await castVote({
-                postId: post.id,
-                userId: session?.user.id as string,
+                postId: postDetailData.post.id,
+                userId: userContext.session?.user.id as string,
                 voteType: "down",
                 onSuccess: () => {
                   window.location.reload();
@@ -103,18 +146,26 @@ export function PostView() {
 
         <div className="grid m-2 w-full">
           <p>
-            Posted By {post.author_name} {timeAgo(post.created_at)} ago
+            Posted By {postDetailData.post?.author_name}{" "}
+            {postDetailData.post &&
+              `${timeAgo(postDetailData.post?.created_at)} ago`}
           </p>
-          <h3 className="text-2xl">{post.title}</h3>
+          <h3 className="text-2xl">{postDetailData.post?.title}</h3>
           <p
             className="font-sans bg-gray-600 rounded p-4 m-4"
             data-e2e="post-content"
           >
-            {post.content}
+            {postDetailData.post?.content}
           </p>
-          {session && <CreateComment parent={post} />}
+          {userContext.session && postDetailData.post && (
+            <CreateComment parent={postDetailData.post} />
+          )}
           {nestedComments.map((comment) => (
-            <CommentView key={comment.id} comment={comment} />
+            <CommentView
+              key={comment.id}
+              comment={comment}
+              myVotes={postDetailData.myVotes}
+            />
           ))}
         </div>
       </div>
@@ -122,7 +173,13 @@ export function PostView() {
   );
 }
 
-function CommentView({ comment }: { comment: Comment }) {
+function CommentView({
+  comment,
+  myVotes,
+}: {
+  comment: Comment;
+  myVotes: Record<string, "up" | "down" | undefined> | undefined;
+}) {
   const [commenting, setCommenting] = useState(false);
   const { session } = useContext(UserContext);
   return (
@@ -135,7 +192,7 @@ function CommentView({ comment }: { comment: Comment }) {
           <div className="flex flex-col grow-0 bg-gray-800 p-2 h-full rounded">
             <UpVote
               direction="up"
-              filled={false}
+              filled={myVotes?.[comment.id] === "up"}
               enabled={!!session}
               onClick={async () => {
                 await castVote({
@@ -153,7 +210,7 @@ function CommentView({ comment }: { comment: Comment }) {
             </p>
             <UpVote
               direction="down"
-              filled={false}
+              filled={myVotes?.[comment.id] === "down"}
               enabled={!!session}
               onClick={async () => {
                 await castVote({
@@ -195,7 +252,11 @@ function CommentView({ comment }: { comment: Comment }) {
             )}
             {/* <p>{comment.id}</p> */}
             {comment.comments.map((childComment) => (
-              <CommentView key={childComment.id} comment={childComment} />
+              <CommentView
+                key={childComment.id}
+                comment={childComment}
+                myVotes={myVotes}
+              />
             ))}
           </div>
         </div>

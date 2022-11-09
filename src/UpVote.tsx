@@ -1,3 +1,5 @@
+import { useMemo } from "react";
+
 export function UpVote(
   {
     direction = "up",
@@ -6,19 +8,36 @@ export function UpVote(
     onClick = () => {},
   }: {
     direction: "up" | "down";
-    filled?: boolean;
+    filled?: boolean | null;
     enabled?: boolean;
     onClick?: () => void;
   } = {} as any
 ) {
-  const classes = ["fill-white"];
-  if (direction === "down") {
-    classes.push("origin-center rotate-180");
-  }
+  const classes = useMemo(() => {
+    const temp = [];
+    if (direction === "down") {
+      temp.push("origin-center rotate-180");
+    }
+    if (filled) {
+      temp.push(direction === "up" ? "fill-green-400" : "fill-red-400");
+      temp.push("glow");
+    } else {
+      temp.push("fill-white");
+    }
+    if (!enabled) {
+      temp.push("opacity-50");
+    }
+    return temp.join(" ");
+  }, [direction, filled, enabled]);
   return (
-    <button disabled={!enabled} onClick={onClick} data-e2e={`${direction}vote`}>
+    <button
+      disabled={!enabled}
+      onClick={onClick}
+      data-e2e={`${direction}vote`}
+      data-filled={filled}
+    >
       <svg
-        className={classes.join(" ")}
+        className={classes}
         width="24px"
         height="24px"
         viewBox="0 0 24 24"

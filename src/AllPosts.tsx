@@ -1,5 +1,5 @@
 import { useContext, useEffect, useMemo, useState } from "react";
-import { Link, useLoaderData } from "react-router-dom";
+import { Link, useLoaderData, useParams } from "react-router-dom";
 import { UserContext } from "./App";
 import { CreatePost } from "./CreatePost";
 import { supaClient } from "./supa-client";
@@ -27,22 +27,61 @@ export async function allPostsLoader({
 
 export function AllPosts() {
   const { session } = useContext(UserContext);
-  const posts = useLoaderData() as PostData[];
-  console.log(posts);
+  const { pageNumber } = useParams();
+  const [bumper, setBumper] = useState(0);
+  const [posts, setPosts] = useState<PostData[]>([]);
+  const [myVotes, setMyVotes] = useState<
+    Record<string, "up" | "down" | undefined>
+  >({});
+  useEffect(() => {
+    const queryPageNumber = pageNumber ? +pageNumber : 1;
+    supaClient
+      .rpc("get_posts", { page_number: queryPageNumber })
+      .select("*")
+      .then(({ data }) => {
+        setPosts(data as PostData[]);
+        if (session?.user) {
+          supaClient
+            .from("post_votes")
+            .select("*")
+            .eq("user_id", session.user.id)
+            .then(({ data: votesData }) => {
+              if (!votesData) {
+                return;
+              }
+              const votes = votesData.reduce((acc, vote) => {
+                acc[vote.post_id] = vote.vote_type;
+                return acc;
+              }, {} as Record<string, "up" | "down" | undefined>);
+              setMyVotes(votes);
+            });
+        }
+      });
+  }, [session, bumper, pageNumber]);
 
   return (
     <>
       {session && <CreatePost />}
       <div className="grid grid-cols-1 width-xl">
         {posts?.map((post, i) => (
-          <Post key={post.id} postData={post} />
+          <Post
+            key={post.id}
+            postData={post}
+            myVote={myVotes?.[post.id] || undefined}
+          />
         ))}
       </div>
     </>
   );
 }
 
-function Post({ postData }: { postData: PostData }) {
+function Post({
+  postData,
+  myVote,
+}: {
+  postData: PostData;
+  myVote: "up" | "down" | undefined;
+}) {
   const { session } = useContext(UserContext);
   return (
     <div className="flex bg-grey1 text-white m-4 border-2 rounded">
@@ -50,7 +89,7 @@ function Post({ postData }: { postData: PostData }) {
         <UpVote
           direction="up"
           // handle filling later
-          filled={false}
+          filled={myVote === "up"}
           enabled={!!session}
           onClick={async () => {
             await castVote({
@@ -68,7 +107,7 @@ function Post({ postData }: { postData: PostData }) {
         </p>
         <UpVote
           direction="down"
-          filled={false}
+          filled={myVote === "down"}
           enabled={!!session}
           onClick={async () => {
             await castVote({

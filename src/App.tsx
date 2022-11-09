@@ -28,12 +28,12 @@ export const router = createBrowserRouter([
           {
             path: ":pageNumber",
             element: <AllPosts />,
-            loader: allPostsLoader as any,
+            // loader: allPostsLoader as any,
           },
           {
             path: "post/:postId",
             element: <PostView />,
-            loader: postDetailLoader as any,
+            // loader: postDetailLoader as any,
           },
         ],
       },
