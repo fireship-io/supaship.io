@@ -26,7 +26,10 @@ export default function MessageBoard() {
       {userProfile.session ? (
         <></>
       ) : (
-        <h2 className="text-center m-6" data-e2e="message-board-login">
+        <h2
+          className="text-center m-6 flex justify-center place-items-center"
+          data-e2e="message-board-login"
+        >
           Yo Dawg. you gotta <Login /> to join in the discussion.
         </h2>
       )}

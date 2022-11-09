@@ -23,27 +23,29 @@ export default function Login() {
 
   return (
     <>
-      <button
-        className="relative hidden md:inline-block px-4 py-2 text-xl font-display text-black hover:text-white bg-white hover:bg-purple-600 drop-shadow-[6px_6px_0_black] hover:drop-shadow-[0_0_7px_rgba(168,85,247,0.5)] transition-all duration-300"
-        onClick={() => {
-          setAuthMode("sign_in");
-          setShowModal(true);
-          setReturnPath();
-        }}
-      >
-        login
-      </button>{" "}
-      <span className="p-2"> or </span>{" "}
-      <button
-        className="relative hidden md:inline-block px-4 py-2 text-xl font-display text-black hover:text-white bg-white hover:bg-purple-600 drop-shadow-[6px_6px_0_black] hover:drop-shadow-[0_0_7px_rgba(168,85,247,0.5)] transition-all duration-300"
-        onClick={() => {
-          setAuthMode("sign_up");
-          setShowModal(true);
-          setReturnPath();
-        }}
-      >
-        sign up
-      </button>
+      <div className="flex m-4 place-items-center">
+        <button
+          className="md:inline-block px-4 py-2 text-xl font-display text-black hover:text-white bg-white hover:bg-purple-600 drop-shadow-[6px_6px_0_black] hover:drop-shadow-[0_0_7px_rgba(168,85,247,0.5)] transition-all duration-300"
+          onClick={() => {
+            setAuthMode("sign_in");
+            setShowModal(true);
+            setReturnPath();
+          }}
+        >
+          login
+        </button>{" "}
+        <span className="p-2"> or </span>{" "}
+        <button
+          className="md:inline-block px-4 py-2 text-xl font-display text-black hover:text-white bg-white hover:bg-purple-600 drop-shadow-[6px_6px_0_black] hover:drop-shadow-[0_0_7px_rgba(168,85,247,0.5)] transition-all duration-300"
+          onClick={() => {
+            setAuthMode("sign_up");
+            setShowModal(true);
+            setReturnPath();
+          }}
+        >
+          sign up
+        </button>
+      </div>
       <Dialog
         open={showModal}
         dialogStateChange={(open) => setShowModal(open)}

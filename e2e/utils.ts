@@ -36,7 +36,9 @@ export async function signUp(
   await emailInput.fill(email);
   const passwordInput = page.locator('input[name="password"]');
   await passwordInput.fill(password);
-  const signUpSubmitButton = page.locator("button.supabase-ui-auth_ui-button");
+  const signUpSubmitButton = page.locator("button.supabase-ui-auth_ui-button", {
+    hasText: "Sign Up",
+  });
   await signUpSubmitButton.click();
   const welcomeNotice = page.locator("h2", { hasText: "Welcome to Supaship!" });
   await expect(welcomeNotice).toHaveCount(1);
@@ -66,7 +68,7 @@ export async function login(
   const passwordInput = page.locator('input[name="password"]');
   await passwordInput.fill(password);
   const signUpSubmitButton = page.locator("button.supabase-ui-auth_ui-button");
-  await signUpSubmitButton.click();
+  await signUpSubmitButton.nth(1).click();
   const logoutButton = page.locator("button", { hasText: "Logout" });
   await expect(logoutButton).toHaveCount(1);
   const usernameMention = page.locator("h2", { hasText: username });
