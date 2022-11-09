@@ -6,7 +6,6 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "postinstall": "yarn add -D supabase",
     "test": "yarn playwright test",
     "debug": "yarn playwright test --debug"
   },
