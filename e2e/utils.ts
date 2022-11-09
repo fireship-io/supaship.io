@@ -56,9 +56,10 @@ export async function login(
   page: Page,
   email: string,
   password: string,
-  username: string
+  username: string,
+  loginButtonSelector = "button"
 ) {
-  const signUpButton = page.locator("button", { hasText: "Login" });
+  const signUpButton = page.locator(loginButtonSelector, { hasText: "Login" });
   await signUpButton.click();
   const emailInput = page.locator('input[name="email"]');
   await emailInput.fill(email);

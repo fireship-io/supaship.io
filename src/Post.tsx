@@ -65,13 +65,9 @@ export function PostView() {
     <div className="flex flex-col place-content-center">
       <div className="flex text-white ml-4 my-4 border-l-2 rounded grow">
         <div className="flex flex-col bg-gray-800 p-2 h-full rounded">
-          <button>
-            <UpVote direction="up" filled={false} />
-          </button>
+          <UpVote direction="up" filled={false} enabled={!!session} />
           <p className="text-center">{post.score}</p>
-          <button>
-            <UpVote direction="down" filled={false} />
-          </button>
+          <UpVote direction="down" filled={false} enabled={!!session} />
         </div>
 
         <div className="grid m-2 w-full">
@@ -79,10 +75,13 @@ export function PostView() {
             Posted By {post.author_name} {timeAgo(post.created_at)} ago
           </p>
           <h3 className="text-2xl">{post.title}</h3>
-          <p className="font-sans bg-gray-600 rounded p-4 m-4">
+          <p
+            className="font-sans bg-gray-600 rounded p-4 m-4"
+            data-e2e="post-content"
+          >
             {post.content}
           </p>
-          <CreateComment parent={post} />
+          {session && <CreateComment parent={post} />}
           {nestedComments.map((comment) => (
             <CommentView key={comment.id} comment={comment} />
           ))}
@@ -94,27 +93,27 @@ export function PostView() {
 
 function CommentView({ comment }: { comment: Comment }) {
   const [commenting, setCommenting] = useState(false);
+  const { session } = useContext(UserContext);
   return (
     <>
-      <div className="flex bg-grey1 text-white my-4 ml-4 border-l-2 rounded">
-        {/* {new Array(comment.depth).fill(0).map((_, i) => (
-          <div key={i} className="w-4" />
-        ))} */}
+      <div
+        className="flex bg-grey1 text-white my-4 ml-4 border-l-2 rounded"
+        data-e2e={`comment-${comment.id}`}
+      >
         <div className="flex w-full grow">
           <div className="flex flex-col grow-0 bg-gray-800 p-2 h-full rounded">
-            <button>
-              <UpVote direction="up" filled={false} />
-            </button>
+            <UpVote direction="up" filled={false} enabled={!!session} />
             <p className="text-center">{comment.score}</p>
-            <button>
-              <UpVote direction="down" filled={false} />
-            </button>
+            <UpVote direction="down" filled={false} enabled={!!session} />
           </div>
           <div className="grid grid-cols-1 ml-2 my-2 w-full">
             <p>
               {comment.author_name} - {timeAgo(comment.created_at)} ago
             </p>
-            <p className="font-sans bg-gray-600 rounded p-4 m-4">
+            <p
+              className="font-sans bg-gray-600 rounded p-4 m-4"
+              data-e2e="comment-content"
+            >
               {comment.content}
             </p>
             {commenting && (
@@ -125,7 +124,10 @@ function CommentView({ comment }: { comment: Comment }) {
             )}
             {!commenting && (
               <div className="ml-4">
-                <button onClick={() => setCommenting(!commenting)}>
+                <button
+                  onClick={() => setCommenting(!commenting)}
+                  disabled={!session}
+                >
                   {commenting ? "Cancel" : "Reply"}
                 </button>
               </div>
@@ -154,6 +156,7 @@ function CreateComment({
     <>
       <form
         className="rounded border-2 p-4 mx-4 flex flex-col justify-start gap-4"
+        data-e2e="create-comment-form"
         onSubmit={(event) => {
           event.preventDefault();
           supaClient

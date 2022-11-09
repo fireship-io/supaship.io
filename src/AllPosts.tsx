@@ -43,16 +43,13 @@ export function AllPosts() {
 }
 
 function Post({ postData }: { postData: PostData }) {
+  const { session } = useContext(UserContext);
   return (
     <div className="flex bg-grey1 text-white m-4 border-2 rounded">
       <div className="flex-none grid grid-cols-1 place-content-center bg-gray-800 p-2 mr-4">
-        <button>
-          <UpVote direction="up" filled={false} />
-        </button>
+        <UpVote direction="up" filled={false} enabled={!!session} />
         <p className="text-center">{postData.score}</p>
-        <button>
-          <UpVote direction="down" filled={false} />
-        </button>
+        <UpVote direction="down" filled={false} enabled={!!session} />
       </div>
       <Link to={`/message-board/post/${postData.id}`} className="flex-auto">
         <p className="mt-4">

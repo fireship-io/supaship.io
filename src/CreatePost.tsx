@@ -16,6 +16,7 @@ export function CreatePost({ newPostCreated = () => {} }: CreatePostProps) {
     <>
       <form
         className="rounded border-2 p-4 ml-4 flex flex-col justify-start gap-4 mb-8"
+        data-e2e="create-post-form"
         onSubmit={(event) => {
           event.preventDefault();
           supaClient

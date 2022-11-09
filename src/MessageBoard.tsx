@@ -16,7 +16,7 @@ export default function MessageBoard() {
       {userProfile.session ? (
         <></>
       ) : (
-        <h2 className="text-center m-6">
+        <h2 className="text-center m-6" data-e2e="message-board-login">
           Yo Dawg. you gotta <Login /> to join in the discussion.
         </h2>
       )}
