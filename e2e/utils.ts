@@ -36,10 +36,11 @@ export async function signUp(
   await emailInput.fill(email);
   const passwordInput = page.locator('input[name="password"]');
   await passwordInput.fill(password);
-  const signUpSubmitButton = page.locator("button.supabase-ui-auth_ui-button", {
-    hasText: "Sign Up",
-  });
-  await signUpSubmitButton.click();
+  //   const signUpSubmitButton = page.locator("button.supabase-ui-auth_ui-button", {
+  //     hasText: "Sign Up",
+  //   });
+  //   await signUpSubmitButton.click();
+  await page.keyboard.press("Enter");
   const welcomeNotice = page.locator("h2", { hasText: "Welcome to Supaship!" });
   await expect(welcomeNotice).toHaveCount(1);
   if (skipUserName) {

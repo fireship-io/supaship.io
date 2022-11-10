@@ -34,6 +34,15 @@ create table post_votes (
     unique (post_id, user_id)
 );
 
+create table email_list (
+    id uuid primary key default uuid_generate_v4() not null,
+    user_id uuid references auth.users (id),
+    email text not null,
+    approved boolean not null default false,
+    stop_asking boolean not null default false
+    CONSTRAINT proper_email CHECK (email ~* '^[A-Za-z0-9._+%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$')
+);
+
 create function update_post_score()
 returns trigger
 language plpgsql
@@ -247,3 +256,18 @@ TO public
 USING (auth.uid()=user_id)
 WITH CHECK (auth.uid()=user_id);
 
+CREATE POLICY "owners can see their own" ON "public"."email_list"
+AS PERMISSIVE FOR SELECT
+TO public
+USING (auth.uid()=user_id);
+
+CREATE POLICY "owners can insert for themselves" ON "public"."email_list"
+AS PERMISSIVE FOR INSERT
+TO public
+WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "owners can update their data" ON "public"."email_list"
+AS PERMISSIVE FOR UPDATE
+TO public
+USING (auth.uid()=user_id)
+WITH CHECK (auth.uid()=user_id);
