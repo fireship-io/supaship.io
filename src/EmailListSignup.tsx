@@ -64,7 +64,10 @@ export function EmailListSignup() {
   }
 
   return showConfirmation ? (
-    <div data-e2e="email-confirmation-notice">
+    <div
+      data-e2e="email-confirmation-notice"
+      className="email-list-signup rounded drop-shadow border-green-800 border-2 bg-gray-400 my-4 p-2 grid grid-cols-1 place-items-center gap-4"
+    >
       <h2>You're signed up for an email when the course launches!</h2>
 
       <button
@@ -85,20 +88,29 @@ export function EmailListSignup() {
             setShowConfirmation(false);
           }
         }}
+        className="bg-red-400 rounded font-display text-lg p-2"
       >
         Take me off your list!
       </button>
     </div>
   ) : justRemovedFromList ? (
-    <div data-e2e="email-remove-confirmation">
-      <h2>You've got it, you've been removed from the email list.</h2>
+    <div
+      data-e2e="email-remove-confirmation"
+      className="rounded drop-shadow border-green-800 border-2 bg-gray-400 my-4 p-2 text-center"
+    >
+      <h2 className="text-center">
+        You've got it, you've been removed from the email list.
+      </h2>
     </div>
   ) : (
-    <div className="email-list-signup">
-      <h2>Want to get an email when our course goes live?</h2>
+    <div className="email-list-signup rounded border-green-800 border-2 bg-gray-400 my-4 p-2 drop-shadow-[0_0_9px_rgba(34,197,94,0.9)] text-center">
+      <h2 className="text-center">
+        Want to get an email when our course goes live?
+      </h2>
       {showForm ? (
         <>
           <form
+            className="grid place-items-center"
             data-e2e="email-signup-form"
             onSubmit={async (event) => {
               event.preventDefault();
@@ -137,50 +149,65 @@ export function EmailListSignup() {
               ref={inputRef}
               type="email"
               data-e2e="email-signup-input"
+              className="text-2xl font-display rounded border-2 text-color-green-400 border-green-400 p-2 m-4 text-center text-green-400 drop-shadow-[0_0_9px_rgba(34,197,94,0.9)] m-4 text-center text-3xl"
               onChange={({ target }) => {
                 setEmail(target.value);
               }}
             />
-            <button type="submit" disabled={!isEmailValid(email)}>
-              Sign Up For Emails
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setShowForm(false);
-              }}
-            >
-              Cancel
-            </button>
+            <div>
+              <button
+                type="submit"
+                disabled={!isEmailValid(email)}
+                className="bg-green-400 rounded font-display text-lg p-2 mx-4"
+              >
+                Sign Up For Emails
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowForm(false);
+                }}
+                className="bg-gray-400 rounded font-display text-lg p-2"
+              >
+                Cancel
+              </button>
+            </div>
             {errorMessage && <p className="text-red-400">{errorMessage}</p>}
           </form>
         </>
       ) : (
         <>
-          <button data-e2e="email-signup" onClick={() => setShowForm(true)}>
-            Sure
-          </button>
-          <button
-            onClick={async () => {
-              setStopAsking(true);
-              if (session?.user) {
-                await supaClient
-                  .from("email_list")
-                  .insert({
-                    user_id: session?.user.id,
-                    email: session?.user.email,
-                    approved: false,
-                    stop_asking: true,
-                  })
-                  .select("*")
-                  .single();
-              } else {
-                localStorage.setItem("stopAskingEmailList", "true");
-              }
-            }}
-          >
-            Stop Asking
-          </button>
+          <div className="flex justify-center gap-6 mt-4">
+            <button
+              data-e2e="email-signup"
+              onClick={() => setShowForm(true)}
+              className="bg-green-400 rounded font-display text-lg p-2"
+            >
+              Sure
+            </button>
+            <button
+              onClick={async () => {
+                setStopAsking(true);
+                if (session?.user) {
+                  await supaClient
+                    .from("email_list")
+                    .insert({
+                      user_id: session?.user.id,
+                      email: session?.user.email,
+                      approved: false,
+                      stop_asking: true,
+                    })
+                    .select("*")
+                    .single();
+                } else {
+                  localStorage.setItem("stopAskingEmailList", "true");
+                }
+              }}
+              className="bg-red-400 rounded font-display text-lg p-2"
+            >
+              Stop Asking
+            </button>
+          </div>
         </>
       )}
     </div>
