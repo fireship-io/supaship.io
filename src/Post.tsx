@@ -1,4 +1,4 @@
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useLoaderData, useParams } from "react-router-dom";
 import { castVote } from "./AllPosts";
 import { UserContext } from "./App";
@@ -249,7 +249,10 @@ function CommentView({
               <CreateComment
                 parent={comment}
                 onCancel={() => setCommenting(false)}
-                onSuccess={() => onVoteSuccess()}
+                onSuccess={() => {
+                  onVoteSuccess();
+                  setCommenting(false);
+                }}
               />
             )}
             {!commenting && (
@@ -289,6 +292,7 @@ function CreateComment({
 }) {
   const user = useContext(UserContext);
   const [comment, setComment] = useState("");
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   return (
     <>
       <form
@@ -307,12 +311,15 @@ function CreateComment({
                 console.log(error);
               } else {
                 onSuccess();
+                textareaRef.current?.value != null &&
+                  (textareaRef.current.value = "");
               }
             });
         }}
       >
         <h3>Add a New Comment</h3>
         <textarea
+          ref={textareaRef}
           name="comment"
           placeholder="Your comment here"
           className="text-gray-800 p-4 rounded"
