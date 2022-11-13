@@ -84,7 +84,7 @@ begin
     join post_score on posts.id = post_score.post_id
     join user_profiles on posts.user_id = user_profiles.user_id
     where posts.path ~ 'root'
-    order by posts.created_at desc
+    order by post_score.score desc, posts.created_at desc
     limit 10
     offset (page_number - 1) * 10;
 end;$$;

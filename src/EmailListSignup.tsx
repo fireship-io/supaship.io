@@ -68,7 +68,9 @@ export function EmailListSignup() {
       data-e2e="email-confirmation-notice"
       className="email-list-signup rounded drop-shadow border-green-800 border-2 bg-gray-400 my-4 p-2 grid grid-cols-1 place-items-center gap-4"
     >
-      <h2>You're signed up for an email when the course launches!</h2>
+      <h2 className="text-center">
+        You're signed up for an email when the course launches!
+      </h2>
 
       <button
         data-e2e="email-remove-button"
