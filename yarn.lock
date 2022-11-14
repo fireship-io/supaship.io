@@ -355,14 +355,13 @@
   resolved "https://registry.yarnpkg.com/@stitches/react/-/react-1.2.8.tgz#954f8008be8d9c65c4e58efa0937f32388ce3a38"
   integrity sha512-9g9dWI4gsSVe8bNLlb+lMkBYsnIKCZTmvqvDG+Avnn69XfmHZKiaMrx7cgTaddq7aTPPmXiTsbFcUy0xgI4+wA==
 
-"@supabase/auth-ui-react@^0.2.5":
-  version "0.2.5"
-  resolved "https://registry.yarnpkg.com/@supabase/auth-ui-react/-/auth-ui-react-0.2.5.tgz#fb48a86e8d35f624c4217d679a7820dd3052d6bc"
-  integrity sha512-YJ0iurSF44/UUg9ZQvgMI0ZEV76tYHoSdRXhmIWMmXH+s08MGu/4cxIKyAjjmeOQ2k1E0t2DfITJZS1jeNis7g==
+"@supabase/auth-ui-react@^0.2.6":
+  version "0.2.6"
+  resolved "https://registry.yarnpkg.com/@supabase/auth-ui-react/-/auth-ui-react-0.2.6.tgz#5ca41b9ef9cf5f52fbad0d67af56cd56f4f79961"
+  integrity sha512-N2qxgsjxPQZPdDotVumzruj4RHaKNFb9ZRecttMeGOvrYFbMWRQVpWT/rYkTPsRW2phKiGXQlMwha6YxUE+t6Q==
   dependencies:
     "@stitches/core" "^1.2.8"
     "@stitches/react" "^1.2.8"
-    just-merge "^3.1.1"
     prop-types "^15.7.2"
   optionalDependencies:
     fsevents "^2.3.2"
@@ -1673,11 +1672,6 @@ jsprim@^1.2.2:
     extsprintf "1.3.0"
     json-schema "0.4.0"
     verror "1.10.0"
-
-just-merge@^3.1.1:
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/just-merge/-/just-merge-3.1.1.tgz#822bdf414a82bc0b05c0631a2961c9137be18adb"
-  integrity sha512-q0VS9owVgV9BcD2cy+E8MB8sIYpqmGAhoAGHH2PHtGwkC0CoITB8FJPMTg38GDO20cuaEGsR8SxCb+kf+g3G2Q==
 
 kind-of@^6.0.3:
   version "6.0.3"

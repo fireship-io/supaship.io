@@ -10,7 +10,7 @@
     "debug": "yarn playwright test --debug"
   },
   "dependencies": {
-    "@supabase/auth-ui-react": "^0.2.5",
+    "@supabase/auth-ui-react": "^0.2.6",
     "@supabase/supabase-js": "^2.0.5",
     "node-sass": "^7.0.3",
     "react": "^18.2.0",
