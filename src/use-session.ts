@@ -1,6 +1,6 @@
 import { RealtimeChannel, Session } from "@supabase/supabase-js";
-import { createContext, useContext, useEffect, useState } from "react";
-import { redirect, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supaClient } from "./supa-client";
 
 export interface UserProfile {
@@ -23,7 +23,7 @@ export function useSession(): SupashipUserInfo {
   useEffect(() => {
     supaClient.auth.getSession().then(({ data: { session } }) => {
       setUserInfo({ ...userInfo, session });
-      supaClient.auth.onAuthStateChange(async (_event, session) => {
+      supaClient.auth.onAuthStateChange((_event, session) => {
         setUserInfo({ session, profile: null });
       });
     });
