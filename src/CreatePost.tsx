@@ -1,17 +1,34 @@
-import { useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { router, UserContext } from "./App";
+import { Session } from "@supabase/supabase-js";
+import { useContext, useRef, useState } from "react";
+import { UserContext } from "./App";
 import { supaClient } from "./supa-client";
 
 export interface CreatePostProps {
   newPostCreated?: () => void;
 }
 
+function createNewPost({
+  session,
+  title,
+  content,
+}: {
+  session: Session | null;
+  title: string;
+  content: string;
+}) {
+  return supaClient.rpc("create_new_post", {
+    userId: session?.user.id,
+    title,
+    content,
+  });
+}
+
 export function CreatePost({ newPostCreated = () => {} }: CreatePostProps) {
-  const user = useContext(UserContext);
+  const { session } = useContext(UserContext);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const navigate = useNavigate();
+  const titleInputRef = useRef<HTMLInputElement>(null);
+  const contentInputRef = useRef<HTMLTextAreaElement>(null);
   return (
     <>
       <form
@@ -19,29 +36,28 @@ export function CreatePost({ newPostCreated = () => {} }: CreatePostProps) {
         data-e2e="create-post-form"
         onSubmit={(event) => {
           event.preventDefault();
-          supaClient
-            .rpc("create_new_post", {
-              userId: user.session?.user.id,
-              title,
-              content,
-            })
-            .then(({ data, error }) => {
-              if (error) {
-                console.log(error);
-              } else {
-                setTitle("");
-                setContent("");
-                newPostCreated();
-                // need to send to creaetd post later
-                window.location.reload();
+          createNewPost({ session, title, content }).then(({ error }) => {
+            if (error) {
+              console.log(error);
+            } else {
+              setTitle("");
+              setContent("");
+              if (titleInputRef.current) {
+                titleInputRef.current.value = "";
               }
-            });
+              if (contentInputRef.current) {
+                contentInputRef.current.value = "";
+              }
+              newPostCreated();
+            }
+          });
         }}
       >
         <h3>Create A New Post</h3>
         <input
           type="text"
           name="title"
+          ref={titleInputRef}
           className="text-gray-800 p-2 rounded text-xl"
           placeholder="Your Title Here"
           onChange={({ target: { value } }) => {
@@ -50,6 +66,7 @@ export function CreatePost({ newPostCreated = () => {} }: CreatePostProps) {
         />
         <textarea
           name="contents"
+          ref={contentInputRef}
           placeholder="Your content here"
           className="text-gray-800 p-4 rounded h-24"
           onChange={({ target: { value } }) => {

@@ -1,7 +1,7 @@
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
-import { useLoaderData, useParams } from "react-router-dom";
-import { castVote } from "./AllPosts";
+import { useParams } from "react-router-dom";
 import { UserContext } from "./App";
+import { castVote } from "./cast-vote";
 import { supaClient } from "./supa-client";
 import { timeAgo } from "./time-ago";
 import { UpVote } from "./UpVote";
@@ -25,11 +25,10 @@ export interface Comment {
   score: number;
   created_at: string;
   path: string;
-  depth: number;
   comments: Comment[];
 }
 
-export type DepthFirstComment = Omit<Comment, "comments"> & { depth: number };
+export type DepthFirstComment = Omit<Comment, "comments">;
 
 interface PostDetailData {
   post: Post | null;
@@ -37,13 +36,13 @@ interface PostDetailData {
   myVotes?: Record<string, "up" | "down" | undefined>;
 }
 
-export async function postDetailLoader({
+export async function getPostDetails({
   params: { postId },
   userContext,
 }: {
   params: { postId: string };
   userContext: SupashipUserInfo;
-}) {
+}): Promise<PostDetailData | undefined> {
   const { data, error } = await supaClient
     .rpc("get_single_post_with_comments", { post_id: postId })
     .select("*");
@@ -82,7 +81,7 @@ export function PostView() {
   });
   const [bumper, setBumper] = useState(0);
   useEffect(() => {
-    postDetailLoader({ params, userContext }).then((newPostDetailData) => {
+    getPostDetails({ params, userContext }).then((newPostDetailData) => {
       if (newPostDetailData) {
         setPostDetailData(newPostDetailData);
       }
@@ -265,7 +264,6 @@ function CommentView({
                 </button>
               </div>
             )}
-            {/* <p>{comment.id}</p> */}
             {comment.comments.map((childComment) => (
               <CommentView
                 key={childComment.id}
@@ -355,21 +353,23 @@ function unsortedCommentsToNested(comments: DepthFirstComment[]): Comment[] {
     acc[comment.id] = {
       ...comment,
       comments: [],
-      depth: getDepth(comment.path),
     };
     return acc;
-  }, {} as Record<string, Comment & { depth: number }>);
+  }, {} as Record<string, Comment>);
   const result: Comment[] = [];
   const sortedByDepthThenCreationTime = [...Object.values(commentMap)].sort(
-    (a, b) =>
-      a.depth > b.depth
+    (a, b) => {
+      const aDepth = getDepth(a.path);
+      const bDepth = getDepth(b.path);
+      return aDepth > bDepth
         ? 1
-        : a.depth < b.depth
+        : aDepth < bDepth
         ? -1
-        : new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+        : new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+    }
   );
   for (const post of sortedByDepthThenCreationTime) {
-    if (post.depth === 1) {
+    if (getDepth(post.path) === 1) {
       result.push(post);
     } else {
       const parentNode = getParent(commentMap, post.path);
@@ -396,19 +396,3 @@ function getDepth(path: string): number {
   const rootless = path.replace(".", "");
   return rootless.split(".").filter((x) => !!x).length;
 }
-
-// type DepthFirstComment = Omit<Comment, "comments"> & { depth: number };
-
-// function depthFirstSearch(
-//   comments: Comment[],
-//   currentDepth = 0
-// ): DepthFirstComment[] {
-//   const result: DepthFirstComment[] = [];
-//   for (const comment of comments) {
-//     const temp: any = { ...comment };
-//     delete temp.comments;
-//     const depthFirstComment: DepthFirstComment = { ...comment, depth: currentDepth };
-//     result.push(depthFirstComment);
-//     res
-//   }
-// }

@@ -1,6 +1,7 @@
-import { useContext, useEffect, useMemo, useState } from "react";
-import { Link, useLoaderData, useParams } from "react-router-dom";
+import { useContext, useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 import { UserContext } from "./App";
+import { castVote } from "./cast-vote";
 import { CreatePost } from "./CreatePost";
 import { supaClient } from "./supa-client";
 import { timeAgo } from "./time-ago";
@@ -14,11 +15,7 @@ interface PostData {
   user_id: string;
 }
 
-export async function allPostsLoader({
-  params: { pageNumber },
-}: {
-  params: { pageNumber: string };
-}) {
+export async function getAllPosts({ pageNumber }: { pageNumber: string }) {
   const { data } = await supaClient
     .rpc("get_posts", { page_number: +pageNumber })
     .select("*");
@@ -61,7 +58,13 @@ export function AllPosts() {
 
   return (
     <>
-      {session && <CreatePost />}
+      {session && (
+        <CreatePost
+          newPostCreated={() => {
+            setBumper(bumper + 1);
+          }}
+        />
+      )}
       <div className="grid grid-cols-1 width-xl">
         {posts?.map((post, i) => (
           <Post
@@ -135,46 +138,4 @@ function Post({
       </Link>
     </div>
   );
-}
-
-export async function castVote({
-  postId,
-  userId,
-  voteType,
-  onSuccess = () => {},
-}: {
-  postId: string;
-  userId: string;
-  voteType: "up" | "down";
-  voteId?: Promise<string | undefined>;
-  onSuccess?: () => void;
-}) {
-  const voteId = await getVoteId(userId, postId);
-  const { data, error } = voteId
-    ? await supaClient.from("post_votes").update({
-        id: voteId,
-        post_id: postId,
-        user_id: userId,
-        vote_type: voteType,
-      })
-    : await supaClient.from("post_votes").insert({
-        post_id: postId,
-        user_id: userId,
-        vote_type: voteType,
-      });
-  // handle error
-  onSuccess();
-}
-
-export async function getVoteId(
-  userId: string,
-  postId: string
-): Promise<string | undefined> {
-  const { data, error } = await supaClient
-    .from("post_votes")
-    .select("id")
-    .eq("user_id", userId)
-    .eq("post_id", postId)
-    .single();
-  return data?.id || undefined;
 }

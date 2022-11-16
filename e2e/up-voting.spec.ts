@@ -11,7 +11,7 @@ const testUserEmail = "test@test.io";
 const testUserPassword = "test123567";
 const testUserName = "test";
 
-test.describe("Message Board", () => {
+test.describe("Up Voting", () => {
   test.beforeEach(setupE2eTest);
 
   test.beforeEach(async ({ page }) => {

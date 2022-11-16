@@ -2662,10 +2662,10 @@ strip-indent@^3.0.0:
   dependencies:
     min-indent "^1.0.0"
 
-supabase@^1.12.2:
-  version "1.12.2"
-  resolved "https://registry.yarnpkg.com/supabase/-/supabase-1.12.2.tgz#f0d51dddbfa93dcdde29c11a9551df89953c110d"
-  integrity sha512-IW0q1pLdr3aqRkZc8luW1sppEgKBNy9BDGAsf7/CTJHAg9nxxzuqMbCaABZTXEoDgQJWJfqnkWaxRbi1WN1goQ==
+supabase@^1.14.0:
+  version "1.14.0"
+  resolved "https://registry.yarnpkg.com/supabase/-/supabase-1.14.0.tgz#dc4b5e4c97a3a41baf1905fe7b6e900864a6931c"
+  integrity sha512-ZJNcmhxd7eRYCtL9uBIcQsp+q7S9XPtHrsn6CrrpnssFwDOdhuoIs/kPmMWSfD8JZi91oLYQhXDkXIg1JrFX3Q==
   dependencies:
     node-fetch "^3.2.10"
     tar "6.1.12"
