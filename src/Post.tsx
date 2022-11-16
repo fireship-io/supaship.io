@@ -92,9 +92,9 @@ export function PostView() {
     [postDetailData]
   );
   return (
-    <div className="flex flex-col place-content-center">
-      <div className="flex text-white ml-4 my-4 border-l-2 rounded grow">
-        <div className="flex flex-col bg-gray-800 p-2 h-full rounded">
+    <div className="post-detail-outer-container">
+      <div className="post-detail-inner-container">
+        <div className="post-detail-upvote-container">
           <UpVote
             direction="up"
             filled={
@@ -144,17 +144,14 @@ export function PostView() {
           />
         </div>
 
-        <div className="grid m-2 w-full">
+        <div className="post-detail-body">
           <p>
             Posted By {postDetailData.post?.author_name}{" "}
             {postDetailData.post &&
               `${timeAgo(postDetailData.post?.created_at)} ago`}
           </p>
           <h3 className="text-2xl">{postDetailData.post?.title}</h3>
-          <p
-            className="font-sans bg-gray-600 rounded p-4 m-4"
-            data-e2e="post-content"
-          >
+          <p className="post-detail-content" data-e2e="post-content">
             {postDetailData.post?.content}
           </p>
           {userContext.session && postDetailData.post && (
@@ -195,11 +192,11 @@ function CommentView({
   return (
     <>
       <div
-        className="flex bg-grey1 text-white my-4 ml-4 border-l-2 rounded"
+        className="post-detail-comment-container"
         data-e2e={`comment-${comment.id}`}
       >
-        <div className="flex w-full grow">
-          <div className="flex flex-col grow-0 bg-gray-800 p-2 h-full rounded">
+        <div className="post-detail-comment-inner-container">
+          <div className="post-detail-comment-upvote-container">
             <UpVote
               direction="up"
               filled={myVotes?.[comment.id] === "up"}
@@ -234,12 +231,12 @@ function CommentView({
               }}
             />
           </div>
-          <div className="grid grid-cols-1 ml-2 my-2 w-full">
+          <div className="post-detail-comment-body">
             <p>
               {comment.author_name} - {timeAgo(comment.created_at)} ago
             </p>
             <p
-              className="font-sans bg-gray-600 rounded p-4 m-4"
+              className="post-detail-comment-content"
               data-e2e="comment-content"
             >
               {comment.content}
@@ -294,7 +291,7 @@ function CreateComment({
   return (
     <>
       <form
-        className="rounded border-2 p-4 mx-4 flex flex-col justify-start gap-4"
+        className="post-detail-create-comment-form"
         data-e2e="create-comment-form"
         onSubmit={(event) => {
           event.preventDefault();
@@ -320,7 +317,7 @@ function CreateComment({
           ref={textareaRef}
           name="comment"
           placeholder="Your comment here"
-          className="text-gray-800 p-4 rounded"
+          className="post-detail-create-comment-form-content"
           onChange={({ target: { value } }) => {
             setComment(value);
           }}
@@ -328,7 +325,7 @@ function CreateComment({
         <div className="flex gap-2">
           <button
             type="submit"
-            className="bg-green-400 rounded font-display text-lg p-2"
+            className="post-detail-create-comment-form-submit-button"
             disabled={!comment}
           >
             Submit
@@ -336,7 +333,7 @@ function CreateComment({
           {onCancel && (
             <button
               type="button"
-              className="bg-gray-400 rounded font-display text-lg p-2"
+              className="post-detail-create-comment-form-cancel-button"
               onClick={() => onCancel()}
             >
               Cancel

@@ -6,15 +6,15 @@ import Login from "./Login";
 export default function MessageBoard() {
   const userProfile = useContext(UserContext);
   return (
-    <div className="flex flex-col place-content-center w-full">
+    <div className="message-board-container">
       <Link to="/message-board/1">
-        <h2 className="text-5xl text-center mb-1">Message Board</h2>
+        <h2 className="message-board-header-link">Message Board</h2>
       </Link>
       {userProfile.session ? (
         <></>
       ) : (
         <h2
-          className="text-center m-6 flex justify-center place-items-center"
+          className="message-board-login-message"
           data-e2e="message-board-login"
         >
           Yo Dawg. you gotta <Login /> to join in the discussion.

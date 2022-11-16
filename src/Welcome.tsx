@@ -35,14 +35,12 @@ export function Welcome() {
       open={true}
       contents={
         <>
-          <h2 className="text-green-400 drop-shadow-[0_0_9px_rgba(34,197,94,0.9)] m-4 text-center text-3xl">
-            Welcome to Supaship!!
-          </h2>
+          <h2 className="welcome-header">Welcome to Supaship!!</h2>
           <p className="text-center">
             Let's get started by creating a username:
           </p>
           <form
-            className="grid grid-cols-1 place-items-center"
+            className="welcome-name-form"
             onSubmit={(event) => {
               event.preventDefault();
               supaClient
@@ -76,10 +74,10 @@ export function Welcome() {
                   setServerError("");
                 }
               }}
-              className="text-2xl font-display rounded border-2 text-color-green-400 border-green-400 p-2 m-4 text-center text-green-400 drop-shadow-[0_0_9px_rgba(34,197,94,0.9)] m-4 text-center text-3xl"
+              className="welcome-name-input"
             ></input>
             {formIsDirty && (invalidString || serverError) && (
-              <p className="text-red-400 validation-feedback text-center">
+              <p className="welcome-form-error-message">
                 {serverError || invalidString}
               </p>
             )}
@@ -87,7 +85,7 @@ export function Welcome() {
               This is the name people will see you as on the Message Board
             </p>
             <button
-              className="font-display text-2xl bg-green-400 text-center rounded p-2 m-2 mb-8"
+              className="welcome-form-submit-button"
               type="submit"
               disabled={invalidString != null}
             >

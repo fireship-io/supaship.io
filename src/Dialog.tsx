@@ -29,7 +29,7 @@ export default function Dialog({
 
   return showModal ? (
     <>
-      <div className="opacity-75 fixed inset-0 z-40 bg-black"></div>
+      <div className="dialog-container"></div>
       <div
         onClick={({ target }) => {
           if (!allowClose || dialog.current?.contains(target as any)) {
@@ -43,15 +43,12 @@ export default function Dialog({
           }
           updateDialogState(false);
         }}
-        className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none"
+        className="dialog-backdrop"
       >
-        <div className="relative w-auto my-6 mx-auto w-128">
+        <div className="dialog-placement">
           <div className="relative group">
-            <div className="absolute -inset-0.5 bg-gradient-to-r from-green-200 to-green-600 rounded-lg blur-lg opacity-25 group-hover:opacity-100 transition duration-1000 group-hover:duration-2000"></div>
-            <div
-              ref={dialog}
-              className="relative p-6 bg-black rounded-lg grid place-content-center"
-            >
+            <div className="dialog-accent-border group-hover:opacity-100 group-hover:duration-2000"></div>
+            <div ref={dialog} className="dialog-content-container">
               {contents}
             </div>
           </div>

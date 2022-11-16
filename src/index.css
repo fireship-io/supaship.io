@@ -47,3 +47,209 @@ svg {
 .grid-list {
   @apply grid grid-cols-1 auto-cols-max gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 list-none;
 }
+
+/* AllPosts component styles */
+.posts-container {
+  @apply grid grid-cols-1;
+}
+
+.post-container {
+  @apply flex text-white m-4 border-2 rounded;
+}
+
+.post-upvote-container {
+  @apply flex-none grid grid-cols-1 place-content-center bg-gray-800 p-2 mr-4;
+}
+
+/* CreatePost component styles */
+.create-post-form {
+  @apply rounded border-2 p-4 ml-4 flex flex-col justify-start gap-4 mb-8;
+}
+
+.create-post-title-input {
+  @apply text-gray-800 p-2 rounded text-xl;
+}
+
+.create-post-content-input {
+  @apply text-gray-800 p-4 rounded h-24;
+}
+
+.create-post-submit-button {
+  @apply bg-green-400 rounded font-display text-lg p-2;
+}
+
+/* Dialog component styles */
+.dialog-container {
+  @apply opacity-75 fixed inset-0 z-40 bg-black;
+}
+
+.dialog-backdrop {
+  @apply justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none;
+}
+
+.dialog-placement {
+  @apply relative w-auto my-6 mx-auto w-128;
+}
+
+.dialog-accent-border {
+  @apply absolute -inset-0.5 bg-gradient-to-r from-green-200 to-green-600 rounded-lg blur-lg opacity-25 transition duration-1000;
+}
+
+.dialog-content-container {
+  @apply relative p-6 bg-black rounded-lg grid place-content-center;
+}
+
+/* Home component styles */
+.home-container {
+  @apply grid place-content-center justify-center w-full;
+}
+
+.home-header {
+  @apply text-green-400 drop-shadow-[0_0_9px_rgba(34,197,94,0.9)] m-4 text-center text-5xl;
+}
+
+/* Login component styles  */
+.login-button {
+  @apply md:inline-block px-4 py-2 text-xl font-display text-black hover:text-white bg-white hover:bg-purple-600 drop-shadow-[6px_6px_0_black] hover:drop-shadow-[0_0_7px_rgba(168,85,247,0.5)] transition-all duration-300;
+}
+
+.login-form-container {
+  @apply grid grid-cols-1 place-content-center;
+}
+
+.login-form-label {
+  @apply text-white text-xl font-display;
+}
+
+.login-form-button {
+  @apply text-black text-xl font-display;
+}
+
+.login-form-input {
+  @applu text-2xl font-display font-normal rounded border-2 text-green-400 border-green-400 p-2 m-4 text-center drop-shadow-[0_0_9px_rgba(34,197,94,0.9)] bg-white;
+}
+
+/* MessageBoard component styles */
+.message-board-container {
+  @apply flex flex-col place-content-center w-full;
+}
+
+.message-board-header-link {
+  @apply text-5xl text-center mb-1;
+}
+
+.message-board-login-message {
+  @apply text-center m-6 flex justify-center place-items-center;
+}
+
+/* NavBar component styles */
+.nav-bar {
+  @apply flex justify-between max-w-screen-2xl mx-auto px-3 md:px-8 p-6 md:p-8 text-gray1 w-full;
+}
+
+.nav-logo-link {
+  @apply flex justify-center items-center text-center invisible md:visible;
+}
+
+.nav-logo {
+  @apply hover:scale-125 transition hover:drop-shadow-[0_0_9px_rgba(34,197,94,0.9)] w-0 md:w-64 mt-4;
+}
+
+.nav-right-list {
+  @apply flex justify-center items-center;
+}
+
+.nav-message-board-list-item {
+  @apply mx-2 md:mx-4 hover:scale-105 transition-transform;
+}
+
+.nav-message-board-link {
+  @apply font-sans text-xl font-bold leading-none text-gray2;
+}
+
+.nav-auth-item {
+  @apply ml-2 mr-6 relative;
+}
+
+/* Post component styles */
+.post-detail-outer-container {
+  @apply flex flex-col place-content-center;
+}
+
+.post-detail-inner-container {
+  @apply flex text-white ml-4 my-4 border-l-2 rounded grow;
+}
+
+.post-detail-upvote-container {
+  @apply flex flex-col bg-gray-800 p-2 h-full rounded;
+}
+
+.post-detail-body {
+  @apply grid m-2 w-full;
+}
+
+.post-detail-content {
+  @apply font-sans bg-gray-600 rounded p-4 m-4;
+}
+
+.post-detail-comment-container {
+  @apply flex text-white my-4 ml-4 border-l-2 rounded;
+}
+
+.post-detail-comment-inner-container {
+  @apply flex w-full grow;
+}
+
+.post-detail-comment-upvote-container {
+  @apply flex flex-col grow-0 bg-gray-800 p-2 h-full rounded;
+}
+
+.post-detail-comment-body {
+  @apply grid grid-cols-1 ml-2 my-2 w-full;
+}
+
+.post-detail-comment-content {
+  @apply font-sans bg-gray-600 rounded p-4 m-4;
+}
+
+.post-detail-create-comment-form {
+  @apply rounded border-2 p-4 mx-4 flex flex-col justify-start gap-4;
+}
+
+.post-detail-create-comment-form-content {
+  @apply text-gray-800 p-4 rounded;
+}
+
+.post-detail-create-comment-form-submit-button {
+  @apply bg-green-400 rounded font-display text-lg p-2;
+}
+
+.post-detail-create-comment-form-cancel-button {
+  @apply bg-gray-400 rounded font-display text-lg p-2;
+}
+
+/* UserMenu component styles */
+.user-menu-logout-button {
+  @apply md:inline-block px-4 py-2 text-xl font-display text-black hover:text-white bg-white hover:bg-purple-600 drop-shadow-[6px_6px_0_black] hover:drop-shadow-[0_0_7px_rgba(168,85,247,0.5)] transition-all duration-300;
+}
+
+/* Welcome component styles */
+.welcome-header {
+  @apply text-green-400 drop-shadow-[0_0_9px_rgba(34,197,94,0.9)] m-4 text-center text-3xl;
+}
+
+.welcome-name-form {
+  @apply grid grid-cols-1 place-items-center;
+}
+
+.welcome-name-input {
+  @apply text-2xl font-display rounded border-2 border-green-400 p-2 m-4 text-center text-green-400 drop-shadow-[0_0_9px_rgba(34,197,94,0.9)] m-4 text-center text-3xl;
+}
+
+.welcome-form-error-message {
+  @apply text-red-400 text-center;
+}
+
+.welcome-form-submit-button {
+  @apply font-display text-2xl bg-green-400 text-center rounded p-2 m-2 mb-8;
+}

@@ -65,7 +65,7 @@ export function AllPosts() {
           }}
         />
       )}
-      <div className="grid grid-cols-1 width-xl">
+      <div className="posts-container">
         {posts?.map((post, i) => (
           <Post
             key={post.id}
@@ -92,8 +92,8 @@ function Post({
 }) {
   const { session } = useContext(UserContext);
   return (
-    <div className="flex bg-grey1 text-white m-4 border-2 rounded">
-      <div className="flex-none grid grid-cols-1 place-content-center bg-gray-800 p-2 mr-4">
+    <div className="post-container">
+      <div className="post-upvote-container">
         <UpVote
           direction="up"
           // handle filling later

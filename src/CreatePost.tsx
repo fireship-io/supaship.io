@@ -32,7 +32,7 @@ export function CreatePost({ newPostCreated = () => {} }: CreatePostProps) {
   return (
     <>
       <form
-        className="rounded border-2 p-4 ml-4 flex flex-col justify-start gap-4 mb-8"
+        className="create-post-form"
         data-e2e="create-post-form"
         onSubmit={(event) => {
           event.preventDefault();
@@ -58,7 +58,7 @@ export function CreatePost({ newPostCreated = () => {} }: CreatePostProps) {
           type="text"
           name="title"
           ref={titleInputRef}
-          className="text-gray-800 p-2 rounded text-xl"
+          className="create-post-title-input"
           placeholder="Your Title Here"
           onChange={({ target: { value } }) => {
             setTitle(value);
@@ -68,16 +68,13 @@ export function CreatePost({ newPostCreated = () => {} }: CreatePostProps) {
           name="contents"
           ref={contentInputRef}
           placeholder="Your content here"
-          className="text-gray-800 p-4 rounded h-24"
+          className="create-post-content-input"
           onChange={({ target: { value } }) => {
             setContent(value);
           }}
         />
         <div>
-          <button
-            type="submit"
-            className="bg-green-400 rounded font-display text-lg p-2"
-          >
+          <button type="submit" className="create-post-submit-button">
             Submit
           </button>
         </div>
