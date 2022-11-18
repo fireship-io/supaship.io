@@ -77,7 +77,7 @@ export function Welcome() {
               className="welcome-name-input"
             ></input>
             {formIsDirty && (invalidString || serverError) && (
-              <p className="welcome-form-error-message">
+              <p className="welcome-form-error-message validation-feedback">
                 {serverError || invalidString}
               </p>
             )}

@@ -20,8 +20,6 @@ test.describe("Message Board", () => {
 
   test.describe("not logged in", () => {
     test("can see message board, but cannot interact", async ({ page }) => {
-      const messageBoardLink = page.locator("a", { hasText: "Message Board" });
-      await messageBoardLink.click();
       const messageBoardSignIn = page.locator(
         `[data-e2e="message-board-login"]`
       );
@@ -39,8 +37,7 @@ test.describe("Message Board", () => {
       const post = await createPost(otherUser, "test post", "test contents");
       await post.click();
       await createComment(otherUser, "test comment");
-      const messageBoardLink = page.locator("a", { hasText: "Message Board" });
-      await messageBoardLink.click();
+      page.goto("http://localhost:5173");
       const messageBoardSignIn = page.locator(
         `[data-e2e="message-board-login"]`
       );
@@ -76,8 +73,6 @@ test.describe("Message Board", () => {
     test("signing up from the message board sends you back to the message board", async ({
       page,
     }) => {
-      const messageBoardLink = page.locator("a", { hasText: "Message Board" });
-      await messageBoardLink.click();
       await signUp(page, testUserEmail, testUserPassword, testUserName);
       const messageBoardTitle = page.locator("h2", {
         hasText: "Message Board",

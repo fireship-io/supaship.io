@@ -147,7 +147,7 @@ test.describe("User auth", () => {
     const logoutButton = page.locator("button", { hasText: "Logout" });
     await logoutButton.click();
     const signInButton = page.locator("button", { hasText: "Login" });
-    await expect(signInButton).toHaveCount(1);
+    await expect(signInButton).toHaveCount(2);
     await signUp(page, `${userEmail}io`, userPassword, userName, true);
     const userNameInput = page.locator("input[name='username']");
     const submitButton = page.locator("button", { hasText: "Submit" });

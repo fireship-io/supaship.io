@@ -2,7 +2,6 @@ import { createContext } from "react";
 import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 import { AllPosts } from "./AllPosts";
 import "./App.css";
-import Home from "./Home";
 import MessageBoard from "./MessageBoard";
 import NavBar from "./NavBar";
 import { PostView } from "./Post";
@@ -14,9 +13,8 @@ export const router = createBrowserRouter([
     path: "/",
     element: <Layout />,
     children: [
-      { path: "", element: <Home /> },
       {
-        path: "message-board",
+        path: "",
         element: <MessageBoard />,
         children: [
           {

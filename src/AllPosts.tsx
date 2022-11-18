@@ -96,7 +96,6 @@ function Post({
       <div className="post-upvote-container">
         <UpVote
           direction="up"
-          // handle filling later
           filled={myVote === "up"}
           enabled={!!session}
           onClick={async () => {
@@ -129,7 +128,7 @@ function Post({
           }}
         />
       </div>
-      <Link to={`/message-board/post/${postData.id}`} className="flex-auto">
+      <Link to={`/post/${postData.id}`} className="flex-auto">
         <p className="mt-4">
           Posted By {postData.username} {timeAgo((postData as any).created_at)}{" "}
           ago
