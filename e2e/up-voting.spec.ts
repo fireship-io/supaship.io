@@ -15,7 +15,7 @@ test.describe("Up Voting", () => {
   test.beforeEach(setupE2eTest);
 
   test.beforeEach(async ({ page }) => {
-    page.goto("http://localhost:5173");
+    page.goto("http://localhost:1337");
   });
 
   test("upvoting works on main page", async ({ page }) => {

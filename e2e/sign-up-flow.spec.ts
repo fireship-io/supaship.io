@@ -7,7 +7,7 @@ test.describe("User auth", () => {
   const userName = "testuser";
   test.beforeEach(setupE2eTest);
   test.beforeEach(async ({ page }) => {
-    await page.goto("http://localhost:5173");
+    await page.goto("http://localhost:1337");
   });
   test("new user can signup", async ({ browser, page }) => {
     await signUp(page, userEmail, userPassword, userName);
@@ -19,7 +19,7 @@ test.describe("User auth", () => {
   }) => {
     await signUp(page, userEmail, userPassword, userName);
     const newMachine = await browser.newPage();
-    await newMachine.goto("http://localhost:5173");
+    await newMachine.goto("http://localhost:1337");
     await login(newMachine, userEmail, userPassword, userName);
   });
 
@@ -29,7 +29,7 @@ test.describe("User auth", () => {
   }) => {
     await signUp(page, userEmail, userPassword, userName);
     const newTab = await context.newPage();
-    await newTab.goto("http://localhost:5173");
+    await newTab.goto("http://localhost:1337");
     const logoutButton = newTab.locator("button", { hasText: "Logout" });
     await expect(logoutButton).toHaveCount(1);
   });
@@ -38,7 +38,7 @@ test.describe("User auth", () => {
     page,
   }) => {
     await signUp(page, userEmail, userPassword, userName, true);
-    await page.goto("http://localhost:5173");
+    await page.goto("http://localhost:1337");
     const welcomeNotice = page.locator("h2", {
       hasText: "Welcome to Supaship!",
     });
@@ -49,7 +49,7 @@ test.describe("User auth", () => {
     page,
   }) => {
     await signUp(page, userEmail, userPassword, userName);
-    await page.goto("http://localhost:5173/welcome");
+    await page.goto("http://localhost:1337/welcome");
     const welcomeNotice = page.locator("h2", {
       hasText: "Welcome to Supaship!",
     });
@@ -61,9 +61,9 @@ test.describe("User auth", () => {
   test('a logged out user goes to "/" if they visit "/welcome"', async ({
     page,
   }) => {
-    await page.goto("http://localhost:5173/welcome");
+    await page.goto("http://localhost:1337/welcome");
     await page.waitForNavigation({
-      url: "http://localhost:5173/",
+      url: "http://localhost:1337/",
       timeout: 2000,
     });
     const welcomeNotice = page.locator("h2", {
@@ -74,7 +74,7 @@ test.describe("User auth", () => {
 
   test.describe("username validation", () => {
     test.beforeEach(async ({ page }) => {
-      await page.goto("http://localhost:5173");
+      await page.goto("http://localhost:1337");
       await signUp(page, userEmail, userPassword, userName, true);
     });
     test("it should not allow an empty username", async ({ page }) => {

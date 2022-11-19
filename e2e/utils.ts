@@ -4,21 +4,21 @@ import detect from "detect-port";
 
 export async function setupE2eTest() {
   await startSupabase();
-  await reseedDb();
+  reseedDb();
 }
 
 async function startSupabase() {
-  const port = await detect(54321);
-  if (port !== 54321) {
+  const port = await detect(64321);
+  if (port !== 64321) {
     return;
   }
   console.warn("Supabase not detected - Starting it now");
   execSync("npx supabase start");
 }
 
-async function reseedDb() {
+function reseedDb() {
   execSync(
-    "PGPASSWORD=postgres psql -U postgres -h 127.0.0.1 -p 54322 -f supabase/clear-db-data.sql",
+    "PGPASSWORD=postgres psql -U postgres -h 127.0.0.1 -p 64322 -f supabase/clear-db-data.sql",
     { stdio: "ignore" }
   );
 }
@@ -75,7 +75,7 @@ export async function login(
 }
 
 export async function createPost(page: Page, title: string, contents: string) {
-  page.goto("http://localhost:5173/1");
+  page.goto("http://localhost:1337/1");
   const postTitleInput = page.locator(`input[name="title"]`);
   const postContentsInput = page.locator(`textarea[name="contents"]`);
   const postSubmitButton = page.locator(`button[type="submit"]`);

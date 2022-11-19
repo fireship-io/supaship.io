@@ -114,19 +114,19 @@ svg {
 }
 
 .login-form-container {
-  @apply grid grid-cols-1 place-content-center;
+  @apply grid grid-cols-1 place-content-center !important;
 }
 
 .login-form-label {
-  @apply text-white text-xl font-display;
+  @apply text-white text-xl font-display !important;
 }
 
 .login-form-button {
-  @apply text-black text-xl font-display;
+  @apply text-black text-xl font-display !important;
 }
 
 .login-form-input {
-  @applu text-2xl font-display font-normal rounded border-2 text-green-400 border-green-400 p-2 m-4 text-center drop-shadow-[0_0_9px_rgba(34,197,94,0.9)] bg-white;
+  @apply text-2xl font-display font-normal rounded border-2 text-green-400 border-green-400 p-2 m-4 text-center drop-shadow-[0_0_9px_rgba(34,197,94,0.9)] bg-white !important;
 }
 
 /* MessageBoard component styles */

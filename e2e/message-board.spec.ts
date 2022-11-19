@@ -15,7 +15,7 @@ test.describe("Message Board", () => {
   test.beforeEach(setupE2eTest);
 
   test.beforeEach(async ({ page }) => {
-    page.goto("http://localhost:5173");
+    page.goto("http://localhost:1337");
   });
 
   test.describe("not logged in", () => {
@@ -32,12 +32,12 @@ test.describe("Message Board", () => {
       browser,
     }) => {
       const otherUser = await browser.newPage();
-      otherUser.goto("http://localhost:5173");
+      otherUser.goto("http://localhost:1337");
       await signUp(otherUser, testUserEmail, testUserPassword, testUserName);
       const post = await createPost(otherUser, "test post", "test contents");
       await post.click();
       await createComment(otherUser, "test comment");
-      page.goto("http://localhost:5173");
+      page.goto("http://localhost:1337");
       const messageBoardSignIn = page.locator(
         `[data-e2e="message-board-login"]`
       );
