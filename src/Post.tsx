@@ -2,9 +2,11 @@ import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { UserContext } from "./App";
 import { castVote } from "./cast-vote";
+import { GetSinglePostWithCommentResponse } from "./database.types";
 import { supaClient } from "./supa-client";
 import { timeAgo } from "./time-ago";
 import { UpVote } from "./UpVote";
+import { usePostScore } from "./use-post-score";
 import { SupashipUserInfo } from "./use-session";
 
 export interface Post {
@@ -15,7 +17,7 @@ export interface Post {
   score: number;
   created_at: string;
   path: string;
-  comments: Comment[];
+  // comments: Comment[];
 }
 
 export interface Comment {
@@ -49,12 +51,17 @@ export async function getPostDetails({
   if (error || !data || data.length === 0) {
     throw new Error("Post not found");
   }
-  const postMap = data.reduce((acc, post) => {
-    acc[post.id] = post;
-    return acc;
-  }, {} as Record<string, Post>);
+  const postMap = (data as GetSinglePostWithCommentResponse[]).reduce(
+    (acc, post) => {
+      acc[post.id] = post;
+      return acc;
+    },
+    {} as Record<string, Post>
+  );
   const post = postMap[postId];
-  const comments = data.filter((x) => x.id !== postId);
+  const comments = (data as GetSinglePostWithCommentResponse[]).filter(
+    (x) => x.id !== postId
+  );
   if (!userContext.session?.user) {
     return { post, comments };
   }
@@ -66,7 +73,7 @@ export async function getPostDetails({
     return;
   }
   const votes = votesData.reduce((acc, vote) => {
-    acc[vote.post_id] = vote.vote_type;
+    acc[vote.post_id] = vote.vote_type as any;
     return acc;
   }, {} as Record<string, "up" | "down" | undefined>);
   return { post, comments, myVotes: votes };
@@ -90,6 +97,35 @@ export function PostView() {
   const nestedComments = useMemo(
     () => unsortedCommentsToNested(postDetailData.comments),
     [postDetailData]
+  );
+
+  return (
+    <PostPresentation
+      postDetailData={postDetailData}
+      userContext={userContext}
+      setBumper={setBumper}
+      bumper={bumper}
+      nestedComments={nestedComments}
+    />
+  );
+}
+
+function PostPresentation({
+  postDetailData,
+  userContext,
+  setBumper,
+  bumper,
+  nestedComments,
+}: {
+  postDetailData: PostDetailData;
+  userContext: SupashipUserInfo;
+  setBumper: (x: number) => void;
+  bumper: number;
+  nestedComments: Comment[];
+}) {
+  const score = usePostScore(
+    postDetailData.post?.id || "",
+    postDetailData.post?.score
   );
   return (
     <div className="post-detail-outer-container">
@@ -118,7 +154,7 @@ export function PostView() {
             }}
           />
           <p className="text-center" data-e2e="upvote-count">
-            {postDetailData.post?.score}
+            {score}
           </p>
           <UpVote
             direction="down"
@@ -187,6 +223,7 @@ function CommentView({
   myVotes: Record<string, "up" | "down" | undefined> | undefined;
   onVoteSuccess: () => void;
 }) {
+  const score = usePostScore(comment.id, comment.score);
   const [commenting, setCommenting] = useState(false);
   const { session } = useContext(UserContext);
   return (
@@ -213,7 +250,7 @@ function CommentView({
               }}
             />
             <p className="text-center" data-e2e="upvote-count">
-              {comment.score}
+              {score}
             </p>
             <UpVote
               direction="down"
@@ -297,7 +334,7 @@ function CreateComment({
           event.preventDefault();
           supaClient
             .rpc("create_new_comment", {
-              user_id: user.session?.user.id,
+              user_id: user.session?.user.id || "",
               content: comment,
               path: `${parent.path}.${parent.id.replaceAll("-", "_")}`,
             })

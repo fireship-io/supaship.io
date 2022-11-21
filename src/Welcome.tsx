@@ -47,7 +47,7 @@ export function Welcome() {
                 .from("user_profiles")
                 .insert([
                   {
-                    user_id: user.session?.user.id,
+                    user_id: user.session?.user.id || "",
                     username: userName,
                   },
                 ])

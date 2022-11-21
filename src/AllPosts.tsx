@@ -6,6 +6,7 @@ import { CreatePost } from "./CreatePost";
 import { supaClient } from "./supa-client";
 import { timeAgo } from "./time-ago";
 import { UpVote } from "./UpVote";
+import { usePostScore } from "./use-post-score";
 
 interface PostData {
   id: string;
@@ -47,7 +48,7 @@ export function AllPosts() {
                 return;
               }
               const votes = votesData.reduce((acc, vote) => {
-                acc[vote.post_id] = vote.vote_type;
+                acc[vote.post_id] = vote.vote_type as any;
                 return acc;
               }, {} as Record<string, "up" | "down" | undefined>);
               setMyVotes(votes);
@@ -90,6 +91,7 @@ function Post({
   myVote: "up" | "down" | undefined;
   onVoteSuccess: () => void;
 }) {
+  const score = usePostScore(postData.id, postData.score);
   const { session } = useContext(UserContext);
   return (
     <div className="post-container">
@@ -110,7 +112,7 @@ function Post({
           }}
         />
         <p className="text-center" data-e2e="upvote-count">
-          {postData.score}
+          {score}
         </p>
         <UpVote
           direction="down"

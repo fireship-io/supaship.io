@@ -8,7 +8,7 @@ import { PostView } from "./Post";
 import { SupashipUserInfo, useSession } from "./use-session";
 import { Welcome, welcomeLoader } from "./Welcome";
 
-export const router = createBrowserRouter([
+const router = createBrowserRouter([
   {
     path: "/",
     element: <Layout />,
@@ -46,9 +46,9 @@ function App() {
 }
 
 function Layout() {
-  const { session, profile } = useSession();
+  const supashipUserInfo = useSession();
   return (
-    <UserContext.Provider value={{ session, profile }}>
+    <UserContext.Provider value={supashipUserInfo}>
       <NavBar />
       <Outlet />
     </UserContext.Provider>
