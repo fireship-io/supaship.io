@@ -3,31 +3,24 @@ import { Link, useParams } from "react-router-dom";
 import { UserContext } from "./App";
 import { castVote } from "./cast-vote";
 import { CreatePost } from "./CreatePost";
+import { GetPostsResponse } from "./database.types";
 import { supaClient } from "./supa-client";
 import { timeAgo } from "./time-ago";
 import { UpVote } from "./UpVote";
 import { usePostScore } from "./use-post-score";
 
-interface PostData {
-  id: string;
-  title: string;
-  score: number;
-  username: string;
-  user_id: string;
-}
-
 export async function getAllPosts({ pageNumber }: { pageNumber: string }) {
   const { data } = await supaClient
     .rpc("get_posts", { page_number: +pageNumber })
     .select("*");
-  return data;
+  return data as GetPostsResponse[];
 }
 
 export function AllPosts() {
   const { session } = useContext(UserContext);
   const { pageNumber } = useParams();
   const [bumper, setBumper] = useState(0);
-  const [posts, setPosts] = useState<PostData[]>([]);
+  const [posts, setPosts] = useState<GetPostsResponse[]>([]);
   const [myVotes, setMyVotes] = useState<
     Record<string, "up" | "down" | undefined>
   >({});
@@ -37,7 +30,7 @@ export function AllPosts() {
       .rpc("get_posts", { page_number: queryPageNumber })
       .select("*")
       .then(({ data }) => {
-        setPosts(data as PostData[]);
+        setPosts(data as GetPostsResponse[]);
         if (session?.user) {
           supaClient
             .from("post_votes")
@@ -87,7 +80,7 @@ function Post({
   myVote,
   onVoteSuccess,
 }: {
-  postData: PostData;
+  postData: GetPostsResponse;
   myVote: "up" | "down" | undefined;
   onVoteSuccess: () => void;
 }) {
