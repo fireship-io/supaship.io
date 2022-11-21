@@ -1,4 +1,4 @@
-import test, { expect, Page } from "@playwright/test";
+import test, { expect, Locator, Page } from "@playwright/test";
 import {
   createComment,
   createPost,
@@ -24,8 +24,9 @@ test.describe("Up Voting", () => {
     const upvoteButton = page.locator(`[data-e2e="upvote"]`);
     const downvoteButton = page.locator(`[data-e2e="downvote"]`);
     await expect(upvoteButton).toHaveCount(1);
-    await upvoteButton.click();
+    await waitForClick(upvoteButton);
     const upvoteCount = page.locator(`[data-e2e="upvote-count"]`);
+    await page.reload();
     await expect(upvoteCount).toHaveText("1");
     const filledUpvoteButton = page.locator(
       `[data-e2e="upvote"][data-filled="true"]`
@@ -35,7 +36,8 @@ test.describe("Up Voting", () => {
     );
     await expect(filledUpvoteButton).toHaveCount(1);
     await expect(filledDownvoteButton).toHaveCount(0);
-    await downvoteButton.click();
+    await waitForClick(downvoteButton);
+    await page.reload();
     await expect(upvoteCount).toHaveText("-1");
     await expect(filledDownvoteButton).toHaveCount(1);
     await expect(filledUpvoteButton).toHaveCount(0);
@@ -47,7 +49,8 @@ test.describe("Up Voting", () => {
     const upvoteButton = page.locator(`[data-e2e="upvote"]`);
     const downvoteButton = page.locator(`[data-e2e="downvote"]`);
     await expect(upvoteButton).toHaveCount(1);
-    await upvoteButton.click();
+    await waitForClick(upvoteButton);
+    await page.reload();
     const upvoteCount = page.locator(`[data-e2e="upvote-count"]`);
     await expect(upvoteCount).toHaveText("1");
     const filledUpvoteButton = page.locator(
@@ -58,7 +61,8 @@ test.describe("Up Voting", () => {
     );
     await expect(filledUpvoteButton).toHaveCount(1);
     await expect(filledDownvoteButton).toHaveCount(0);
-    await downvoteButton.click();
+    await waitForClick(downvoteButton);
+    await page.reload();
     await expect(upvoteCount).toHaveText("-1");
     await expect(filledDownvoteButton).toHaveCount(1);
     await expect(filledUpvoteButton).toHaveCount(0);
@@ -76,7 +80,8 @@ test.describe("Up Voting", () => {
     await expect(upvoteCount).toHaveCount(2);
     for (let i = 0; i < 2; i++) {
       await expect(upvoteCount.nth(i)).toHaveText("0");
-      await upvoteButton.nth(i).click();
+      await waitForClick(upvoteButton.nth(i));
+      await page.reload();
       await expect(upvoteCount.nth(i)).toHaveText("1");
       const filledUpvoteButton = page.locator(
         `[data-e2e="upvote"][data-filled="true"]`
@@ -86,10 +91,20 @@ test.describe("Up Voting", () => {
       );
       await expect(filledUpvoteButton).toHaveCount(1);
       await expect(filledDownvoteButton).toHaveCount(i);
-      await downvoteButton.nth(i).click();
+      await waitForClick(downvoteButton.nth(i));
+      await page.reload();
       await expect(upvoteCount.nth(i)).toHaveText("-1");
       await expect(filledDownvoteButton).toHaveCount(i + 1);
       await expect(filledUpvoteButton).toHaveCount(0);
     }
   });
 });
+
+export async function waitForClick(locator: Locator, ms = 10) {
+  await locator.click();
+  await new Promise<void>((res) =>
+    setTimeout(() => {
+      res();
+    }, ms)
+  );
+}

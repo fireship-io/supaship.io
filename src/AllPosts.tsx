@@ -9,13 +9,6 @@ import { timeAgo } from "./time-ago";
 import { UpVote } from "./UpVote";
 import { usePostScore } from "./use-post-score";
 
-export async function getAllPosts({ pageNumber }: { pageNumber: string }) {
-  const { data } = await supaClient
-    .rpc("get_posts", { page_number: +pageNumber })
-    .select("*");
-  return data as GetPostsResponse[];
-}
-
 export function AllPosts() {
   const { session } = useContext(UserContext);
   const { pageNumber } = useParams();

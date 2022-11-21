@@ -17,7 +17,6 @@ export interface Post {
   score: number;
   created_at: string;
   path: string;
-  // comments: Comment[];
 }
 
 export interface Comment {
@@ -30,11 +29,9 @@ export interface Comment {
   comments: Comment[];
 }
 
-export type DepthFirstComment = Omit<Comment, "comments">;
-
 interface PostDetailData {
-  post: Post | null;
-  comments: DepthFirstComment[];
+  post: GetSinglePostWithCommentResponse | null;
+  comments: GetSinglePostWithCommentResponse[];
   myVotes?: Record<string, "up" | "down" | undefined>;
 }
 
@@ -318,7 +315,7 @@ function CreateComment({
   onCancel,
   onSuccess,
 }: {
-  parent: DepthFirstComment | Post;
+  parent: Comment | GetSinglePostWithCommentResponse;
   onCancel?: () => void;
   onSuccess: () => void;
 }) {
@@ -382,7 +379,9 @@ function CreateComment({
   );
 }
 
-function unsortedCommentsToNested(comments: DepthFirstComment[]): Comment[] {
+function unsortedCommentsToNested(
+  comments: GetSinglePostWithCommentResponse[]
+): Comment[] {
   const commentMap = comments.reduce((acc, comment) => {
     acc[comment.id] = {
       ...comment,
