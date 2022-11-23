@@ -12,21 +12,14 @@ export async function castVote({
   voteId?: Promise<string | undefined>;
   onSuccess?: () => void;
 }) {
-  const voteId = await getVoteId(userId, postId);
-  if (voteId) {
-    await supaClient.from("post_votes").update({
-      id: voteId,
+  await supaClient.from("post_votes").upsert(
+    {
       post_id: postId,
       user_id: userId,
       vote_type: voteType,
-    });
-  } else {
-    await supaClient.from("post_votes").insert({
-      post_id: postId,
-      user_id: userId,
-      vote_type: voteType,
-    });
-  }
+    },
+    { onConflict: "post_id,user_id" }
+  );
   onSuccess();
 }
 
