@@ -9,7 +9,6 @@ export async function castVote({
   postId: string;
   userId: string;
   voteType: "up" | "down";
-  voteId?: Promise<string | undefined>;
   onSuccess?: () => void;
 }) {
   await supaClient.from("post_votes").upsert(
@@ -21,17 +20,4 @@ export async function castVote({
     { onConflict: "post_id,user_id" }
   );
   onSuccess();
-}
-
-export async function getVoteId(
-  userId: string,
-  postId: string
-): Promise<string | undefined> {
-  const { data, error } = await supaClient
-    .from("post_votes")
-    .select("id")
-    .eq("user_id", userId)
-    .eq("post_id", postId)
-    .single();
-  return data?.id || undefined;
 }
