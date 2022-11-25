@@ -37,6 +37,8 @@ interface PostDetailData {
   myVotes?: Record<string, "up" | "down" | undefined>;
 }
 
+const START_ASKING_DEPTH = 5;
+
 export async function postDetailLoader({
   params: { postId },
   userContext,
@@ -197,7 +199,16 @@ function CommentView({
   onVoteSuccess: () => void;
 }) {
   const [commenting, setCommenting] = useState(false);
+  const [goDeeper, setGoDeeper] = useState(false);
   const { session } = useContext(UserContext);
+
+  const shouldShowChildren = (): boolean => {
+    const depth = getDepth(comment.path);
+    return depth < START_ASKING_DEPTH
+      ? true
+      : !!comment.comments.length && goDeeper;
+  };
+
   return (
     <>
       <div
@@ -273,14 +284,28 @@ function CommentView({
               </div>
             )}
             {/* <p>{comment.id}</p> */}
-            {comment.comments.map((childComment) => (
-              <CommentView
-                key={childComment.id}
-                comment={childComment}
-                myVotes={myVotes}
-                onVoteSuccess={() => onVoteSuccess()}
-              />
-            ))}
+            {shouldShowChildren() ? (
+              comment.comments.map((childComment) => (
+                <CommentView
+                  key={childComment.id}
+                  comment={childComment}
+                  myVotes={myVotes}
+                  onVoteSuccess={() => onVoteSuccess()}
+                />
+              ))
+            ) : comment.comments.length ? (
+              <div className="ml-4 border-2 border-white rounded bg-gray-600 p-2 m-2 w-64">
+                <p>There are more comments nested deeper.</p>
+                <button
+                  className="bg-gray-400 rounded font-display text-lg p-2"
+                  onClick={() => setGoDeeper(true)}
+                >
+                  Go Deeper
+                </button>
+              </div>
+            ) : (
+              <></>
+            )}
           </div>
         </div>
       </div>
