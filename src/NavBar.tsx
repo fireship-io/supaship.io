@@ -29,9 +29,9 @@ export default function NavBar() {
             slot="basic"
             className="mx-2 lg:mx-4 hover:scale-105 transition-transform invisible lg:visible w-0 lg:w-fit h-0 lg:h-fit"
           >
-            <button
+            <a
               className="font-display text-base font-normal text-green-500 border-green-400 border rounded-md px-2 py-1 hover:drop-shadow-[0_0_9px_rgba(34,197,94,0.9)] flex"
-              onClick={() => setShowProDialog(true)}
+              href="https://fireship.io/courses/supabase"
             >
               <img
                 className="h-6 mr-2"
@@ -44,7 +44,7 @@ export default function NavBar() {
                 className="h-6 ml-2"
                 src="https://supaship.io/supaship_logo.svg"
               />
-            </button>
+            </a>
           </li>
           {/* <li className="mx-2 md:mx-4 hover:scale-105 transition-transform">
           <a

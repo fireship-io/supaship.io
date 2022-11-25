@@ -73,7 +73,7 @@ export async function postDetailLoader({
   return { post, comments, myVotes: votes };
 }
 
-export function PostView() {
+export function PostView({ postId }: { postId: string | undefined }) {
   const userContext = useContext(UserContext);
   const params = useParams() as { postId: string };
   const [postDetailData, setPostDetailData] = useState<PostDetailData>({
@@ -82,7 +82,10 @@ export function PostView() {
   });
   const [bumper, setBumper] = useState(0);
   useEffect(() => {
-    postDetailLoader({ params, userContext }).then((newPostDetailData) => {
+    postDetailLoader({
+      params: postId ? { postId } : params,
+      userContext,
+    }).then((newPostDetailData) => {
       if (newPostDetailData) {
         setPostDetailData(newPostDetailData);
       }
@@ -152,12 +155,14 @@ export function PostView() {
               `${timeAgo(postDetailData.post?.created_at)} ago`}
           </p>
           <h3 className="text-2xl">{postDetailData.post?.title}</h3>
-          <p
+          <div
             className="font-sans bg-gray-600 rounded p-4 m-4"
             data-e2e="post-content"
           >
-            {postDetailData.post?.content}
-          </p>
+            {postDetailData.post?.content.split("\n").map((paragraph) => (
+              <p className="font-sans p-2">{paragraph}</p>
+            ))}
+          </div>
           {userContext.session && postDetailData.post && (
             <CreateComment
               parent={postDetailData.post}
@@ -239,12 +244,14 @@ function CommentView({
             <p>
               {comment.author_name} - {timeAgo(comment.created_at)} ago
             </p>
-            <p
-              className="font-sans bg-gray-600 rounded p-4 m-4"
+            <div
+              className="bg-gray-600 rounded p-4 m-4"
               data-e2e="comment-content"
             >
-              {comment.content}
-            </p>
+              {comment.content.split("\n").map((paragraph) => (
+                <p className="font-sans p-2">{paragraph}</p>
+              ))}
+            </div>
             {commenting && (
               <CreateComment
                 parent={comment}
