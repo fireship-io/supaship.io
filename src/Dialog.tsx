@@ -43,9 +43,9 @@ export default function Dialog({
           }
           updateDialogState(false);
         }}
-        className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none"
+        className="justify-center items-start mt-12 flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none w-screen"
       >
-        <div className="relative w-auto my-6 mx-auto w-128">
+        <div className="relative my-6 mx-auto w-128">
           <div className="relative group">
             <div className="absolute -inset-0.5 bg-gradient-to-r from-green-200 to-green-600 rounded-lg blur-lg opacity-25 group-hover:opacity-100 transition duration-1000 group-hover:duration-2000"></div>
             <div

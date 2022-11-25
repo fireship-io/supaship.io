@@ -12,23 +12,23 @@ export default function Home() {
       </p> */}
       {/* <EmailListSignup /> */}
       <div className="grid place-items-center mt-8 w-full">
-        <h2 className="text-3xl md:text-7xl my-8 text-center">
+        <h2 className="text-3xl lg:text-7xl my-8 text-center">
           🎉🎉🎉 We're Live!!! 🎉🎉🎉
         </h2>
-        <div className="grid md:grid-cols-2 place-items-center gap-8">
+        <div className="grid lg:grid-cols-2 place-items-center gap-8 mx-8">
           <div>
             <a
               className="cursor-pointer"
               href="https://fireship.io/courses/supabase"
             >
               <img
-                className="h-40 w-64 md:w-full md:h-96 md:my-6 cursor-pointer object-cover md:object-fill"
+                className="h-40 w-64 lg:w-full lg:h-96 lg:my-6 cursor-pointer object-cover lg:object-fill"
                 src="https://fireship.io/courses/supabase/img/featured.webp"
               />
             </a>
           </div>
           <iframe
-            className="h-40 md:h-96 w-64 md:w-full md:my-6 object-cover md:object-fill"
+            className="h-40 lg:h-96 w-64 lg:w-full lg:my-6 object-cover lg:object-fill"
             src="https://www.youtube-nocookie.com/embed/zBZgdTb-dns"
             title="YouTube video player"
             frameBorder="0"

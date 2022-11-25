@@ -80,11 +80,10 @@ export async function createPost(page: Page, title: string, contents: string) {
   page.goto("http://localhost:5173/message-board/1");
   const postTitleInput = page.locator(`input[name="title"]`);
   const postContentsInput = page.locator(`textarea[name="contents"]`);
-  const postSubmitButton = page.locator(`button[type="submit"]`);
   await postTitleInput.fill(title);
   await postContentsInput.fill(contents);
-  // TODO: some flake here on stream
-  await postSubmitButton.click();
+  await page.keyboard.press("Tab");
+  await page.keyboard.press("Enter");
   const post = page.locator("h3", { hasText: title });
   await expect(post).toHaveCount(1);
   return post;
