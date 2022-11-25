@@ -64,6 +64,7 @@ export function useSession(): SupashipUserInfo {
           event: "*",
           schema: "public",
           table: "user_profiles",
+          filter: `user_id=eq.${userId}`,
         },
         (payload) => {
           setUserInfo({ ...userInfo, profile: payload.new as UserProfile });
