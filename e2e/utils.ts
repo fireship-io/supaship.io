@@ -83,6 +83,7 @@ export async function createPost(page: Page, title: string, contents: string) {
   const postSubmitButton = page.locator(`button[type="submit"]`);
   await postTitleInput.fill(title);
   await postContentsInput.fill(contents);
+  // TODO: some flake here on stream
   await postSubmitButton.click();
   const post = page.locator("h3", { hasText: title });
   await expect(post).toHaveCount(1);

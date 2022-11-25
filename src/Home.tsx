@@ -12,35 +12,33 @@ export default function Home() {
       </p> */}
       {/* <EmailListSignup /> */}
       <div className="grid place-items-center mt-8 w-full">
-        <h2 className="text-7xl my-8">🎉🎉🎉 We're Live!!! 🎉🎉🎉</h2>
-        <div className="grid grid-cols-2">
+        <h2 className="text-3xl md:text-7xl my-8 text-center">
+          🎉🎉🎉 We're Live!!! 🎉🎉🎉
+        </h2>
+        <div className="grid md:grid-cols-2 place-items-center gap-8">
           <div>
             <a
               className="cursor-pointer"
               href="https://fireship.io/courses/supabase"
             >
               <img
-                className="h-96 m-6 cursor-pointer"
+                className="h-40 w-64 md:w-full md:h-96 md:my-6 cursor-pointer object-cover md:object-fill"
                 src="https://fireship.io/courses/supabase/img/featured.webp"
               />
             </a>
           </div>
-          <div>
-            <iframe
-              className="m-6"
-              width="560"
-              height="315"
-              src="https://www.youtube-nocookie.com/embed/aXOChLn5ZdQ"
-              title="YouTube video player"
-              frameborder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowfullscreen
-            ></iframe>
-          </div>
+          <iframe
+            className="h-40 md:h-96 w-64 md:w-full md:my-6 object-cover md:object-fill"
+            src="https://www.youtube-nocookie.com/embed/zBZgdTb-dns"
+            title="YouTube video player"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          ></iframe>
         </div>
       </div>
       <div className="w-full">
-        <PostView postId="f1f71e6c-dd17-4c98-b943-471997fad2ba"></PostView>
+        <PostView postId="feb6eeb3-f6f6-49f8-bbf4-2fc9ee61f86b"></PostView>
       </div>
     </div>
   );

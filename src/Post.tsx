@@ -73,7 +73,7 @@ export async function postDetailLoader({
   return { post, comments, myVotes: votes };
 }
 
-export function PostView({ postId }: { postId: string | undefined }) {
+export function PostView({ postId }: { postId?: string | undefined }) {
   const userContext = useContext(UserContext);
   const params = useParams() as { postId: string };
   const [postDetailData, setPostDetailData] = useState<PostDetailData>({
