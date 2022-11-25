@@ -31,7 +31,8 @@ test.describe("Pyramid of Death", () => {
       const targetDepth = 6;
       for (let i = 0; i < targetDepth; i++) {
         const replyButton = page.locator(`button`, { hasText: "Reply" }).last();
-        await replyButton.click();
+        await replyButton.focus();
+        await page.keyboard.press("Enter");
         const commentForms = page.locator(`[data-e2e="create-comment-form"]`);
         await expect(commentForms).toHaveCount(2);
         const targetCommentForm = commentForms.last();
@@ -44,7 +45,7 @@ test.describe("Pyramid of Death", () => {
         const postedComment = page.locator(`[data-e2e="comment-content"]`, {
           hasText: commentText,
         });
-        if (i < 4) {
+        if (i < 2) {
           await expect(postedComment).toHaveCount(1);
         } else {
           await expect(postedComment).toHaveCount(0);
@@ -52,7 +53,8 @@ test.describe("Pyramid of Death", () => {
             hasText: "Go Deeper",
           });
           await expect(goDeeperLocator).toHaveCount(1);
-          await goDeeperLocator.click();
+          await goDeeperLocator.focus();
+          await page.keyboard.press("Enter");
           await expect(postedComment).toHaveCount(1);
         }
         await expect(commentForms).toHaveCount(1);

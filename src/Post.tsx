@@ -37,7 +37,7 @@ interface PostDetailData {
   myVotes?: Record<string, "up" | "down" | undefined>;
 }
 
-const START_ASKING_DEPTH = 5;
+const START_ASKING_DEPTH = 3;
 
 export async function postDetailLoader({
   params: { postId },
