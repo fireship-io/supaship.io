@@ -271,3 +271,5 @@ AS PERMISSIVE FOR UPDATE
 TO public
 USING (auth.uid()=user_id)
 WITH CHECK (auth.uid()=user_id);
+
+

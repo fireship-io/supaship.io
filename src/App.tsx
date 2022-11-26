@@ -1,19 +1,14 @@
-import { createContext, useEffect, useState } from "react";
-import reactLogo from "./assets/react.svg";
-import "./App.css";
-import { supaClient } from "./supa-client";
-import { SupashipUserInfo, useSession } from "./use-session";
-import Login from "./Login";
-import UserMenu from "./UserMenu";
-import NavBar from "./NavBar";
+import { createContext } from "react";
 import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
-import MessageBoard from "./MessageBoard";
-import { UserContextProvider } from "@supabase/auth-ui-react/dist/esm/src/components/Auth/UserContext";
-import { AllPosts, allPostsLoader } from "./AllPosts";
-import { Welcome, welcomeLoader } from "./Welcome";
-import { postDetailLoader, PostView } from "./Post";
+import { AllPosts } from "./AllPosts";
+import "./App.css";
 import Home from "./Home";
+import MessageBoard from "./MessageBoard";
+import NavBar from "./NavBar";
+import { PostView } from "./Post";
 import PrivacyPolicy from "./PrivacyPolicy";
+import { SupashipUserInfo, useSession } from "./use-session";
+import { Welcome, welcomeLoader } from "./Welcome";
 
 export const router = createBrowserRouter([
   {
@@ -28,12 +23,10 @@ export const router = createBrowserRouter([
           {
             path: ":pageNumber",
             element: <AllPosts />,
-            // loader: allPostsLoader as any,
           },
           {
             path: "post/:postId",
             element: <PostView />,
-            // loader: postDetailLoader as any,
           },
         ],
       },

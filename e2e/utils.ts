@@ -1,4 +1,5 @@
 import { expect, Page } from "@playwright/test";
+import { createClient } from "@supabase/supabase-js";
 import { execSync } from "child_process";
 import detect from "detect-port";
 
@@ -77,7 +78,7 @@ export async function login(
 }
 
 export async function createPost(page: Page, title: string, contents: string) {
-  page.goto("http://localhost:5173/message-board/1");
+  await page.goto("http://localhost:5173/message-board/1");
   const postTitleInput = page.locator(`input[name="title"]`);
   const postContentsInput = page.locator(`textarea[name="contents"]`);
   await postTitleInput.fill(title);
@@ -85,8 +86,34 @@ export async function createPost(page: Page, title: string, contents: string) {
   await page.keyboard.press("Tab");
   await page.keyboard.press("Enter");
   const post = page.locator("h3", { hasText: title });
+  await new Promise<void>((res) =>
+    setTimeout(() => {
+      res();
+    }, 100)
+  );
+  const count = await post.count();
+  if (!count) {
+    await page.reload();
+  }
   await expect(post).toHaveCount(1);
   return post;
+}
+
+// use this to speed up e2e tests later
+export async function createPostsInBulk(
+  posts: { title: string; contents: string; userId: string }[]
+) {
+  const supaClient = createClient(
+    "http://localhost:54321",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24ifQ.625_WdcF3KHqz5amU0x2X5WWHP-OEs_4qj0ssLNHzTs"
+  );
+  await posts.map((post) =>
+    supaClient.rpc("create_new_post", {
+      userId: post.userId,
+      title: post.title,
+      content: post.contents,
+    })
+  );
 }
 
 export async function createComment(page: Page, comment: string) {

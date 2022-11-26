@@ -39,7 +39,7 @@ interface PostDetailData {
 
 const START_ASKING_DEPTH = 3;
 
-export async function postDetailLoader({
+async function postDetailLoader({
   params: { postId },
   userContext,
 }: {
