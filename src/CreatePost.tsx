@@ -29,11 +29,8 @@ export function CreatePost({ newPostCreated = () => {} }: CreatePostProps) {
               if (error) {
                 console.log(error);
               } else {
-                setTitle("");
-                setContent("");
-                newPostCreated();
-                // need to send to creaetd post later
-                window.location.reload();
+                const newId: string = data as any;
+                navigate(`/message-board/post/${newId}`);
               }
             });
         }}

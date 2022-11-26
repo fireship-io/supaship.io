@@ -338,13 +338,23 @@ function CreateComment({
               content: comment,
               path: `${parent.path}.${parent.id.replaceAll("-", "_")}`,
             })
-            .then(({ error }) => {
+            .then(({ data, error }) => {
               if (error) {
                 console.log(error);
               } else {
                 onSuccess();
                 textareaRef.current?.value != null &&
                   (textareaRef.current.value = "");
+                const commentId = data as unknown as string;
+                let intervalId = setInterval(() => {
+                  const comment = document.querySelector(
+                    `div[data-e2e="comment-${commentId}"]`
+                  );
+                  if (comment) {
+                    clearInterval(intervalId);
+                    comment.scrollIntoView({ behavior: "smooth" });
+                  }
+                }, 100);
               }
             });
         }}

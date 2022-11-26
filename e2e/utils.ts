@@ -85,6 +85,7 @@ export async function createPost(page: Page, title: string, contents: string) {
   await postContentsInput.fill(contents);
   await page.keyboard.press("Tab");
   await page.keyboard.press("Enter");
+  await page.waitForURL("http://localhost:5173/message-board/post/*");
   const post = page.locator("h3", { hasText: title });
   await new Promise<void>((res) =>
     setTimeout(() => {
@@ -94,6 +95,14 @@ export async function createPost(page: Page, title: string, contents: string) {
   const count = await post.count();
   if (!count) {
     await page.reload();
+    if ((await post.count()) === 0) {
+      await new Promise<void>((res) =>
+        setTimeout(() => {
+          res();
+        }, 100)
+      );
+      await page.reload();
+    }
   }
   await expect(post).toHaveCount(1);
   return post;
