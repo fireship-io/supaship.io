@@ -30,18 +30,23 @@ export default function NavBar() {
             className="mx-2 lg:mx-4 hover:scale-105 transition-transform invisible lg:visible w-0 lg:w-fit h-0 lg:h-fit"
           >
             <a
-              className="font-display text-base font-normal text-green-500 border-green-400 border rounded-md px-2 py-1 hover:drop-shadow-[0_0_9px_rgba(34,197,94,0.9)] flex"
+              className="font-display text-base font-normal text-green-500 border-green-400 border rounded-md px-2 py-1 hover:drop-shadow-[0_0_9px_rgba(34,197,94,0.9)] flex place-items-center"
               href="https://fireship.io/courses/supabase"
             >
               <img
-                className="h-6 mr-2"
+                className="h-10 mr-2"
                 src="https://supaship.io/supaship_logo.svg"
               />
-              <span className="inline-block">
-                get the course to build this site on fireship pro
-              </span>
+              <div className="grid place-items-center font-sans">
+                <span className="inline-block">
+                  get the course to build this site on fireship
+                </span>
+                <span className="inline-block">
+                  use coupon: "SUPASHIP" for 50% off!
+                </span>
+              </div>
               <img
-                className="h-6 ml-2"
+                className="h-10 ml-2"
                 src="https://supaship.io/supaship_logo.svg"
               />
             </a>
