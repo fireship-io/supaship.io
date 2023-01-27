@@ -254,35 +254,36 @@ function YoutubeChannelLink({
 function useNotifications() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   useEffect(() => {
-    console.log('here');
+    let innerNotifications: Notification[] = [];
     const fetchNotifications = async () => {
       const res = await supaClient.from('notifications').select('*');
-      setNotifications(res.data || []);
-      // debugger;
-      // supaClient
-      //   .channel(`public:notifications`)
-      //   .on(
-      //     'postgres_changes',
-      //     {
-      //       event: 'INSERT' as any,
-      //       schema: 'public',
-      //       table: 'notifications',
-      //     },
-      //     (payload: any) => {
-      //       debugger;
-      //       const temp = payload as NotificationPayload;
-      //       if (temp.eventType === 'INSERT') {
-      //         // setNotifications([...notifications, temp.new!]);
-      //       } else if (temp.eventType === 'DELETE') {
-      //         setNotifications(
-      //           notifications.filter((n) => n.id !== temp.old?.id)
-      //         );
-      //       } else if (temp.eventType === 'UPDATE') {
-      //         setNotifications([...notifications, temp.new!]); // WRONG!
-      //       }
-      //     }
-      //   )
-      //   .subscribe();
+      innerNotifications = res.data || [];
+      setNotifications(innerNotifications);
+      supaClient
+        .channel(`public:notifications`)
+        .on(
+          'postgres_changes',
+          {
+            event: 'INSERT' as any,
+            schema: 'public',
+            table: 'notifications',
+          },
+          (payload: any) => {
+            debugger;
+            const temp = payload as NotificationPayload;
+            if (temp.eventType === 'INSERT') {
+              innerNotifications = [...innerNotifications, temp.new!];
+            } else if (temp.eventType === 'DELETE') {
+              innerNotifications = innerNotifications.filter(
+                (n) => n.id !== temp.old?.id
+              );
+            } else if (temp.eventType === 'UPDATE') {
+              innerNotifications = [...innerNotifications, temp.new!];
+            }
+            setNotifications(innerNotifications);
+          }
+        )
+        .subscribe();
     };
     fetchNotifications();
   }, []);
