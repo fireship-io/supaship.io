@@ -1,11 +1,11 @@
-import { useContext, useEffect, useMemo, useRef, useState } from "react";
-import { useLoaderData, useParams } from "react-router-dom";
-import { castVote } from "./AllPosts";
-import { UserContext } from "./App";
-import { supaClient } from "./supa-client";
-import { timeAgo } from "./time-ago";
-import { UpVote } from "./UpVote";
-import { SupashipUserInfo } from "./use-session";
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { useLoaderData, useParams } from 'react-router-dom';
+import { castVote } from './AllPosts';
+import { UserContext } from './App';
+import { supaClient } from './supa-client';
+import { timeAgo } from './time-ago';
+import { UpVote } from './UpVote';
+import { SupashipUserInfo } from './use-session';
 
 export interface Post {
   id: string;
@@ -29,12 +29,12 @@ export interface Comment {
   comments: Comment[];
 }
 
-export type DepthFirstComment = Omit<Comment, "comments"> & { depth: number };
+export type DepthFirstComment = Omit<Comment, 'comments'> & { depth: number };
 
 interface PostDetailData {
   post: Post | null;
   comments: DepthFirstComment[];
-  myVotes?: Record<string, "up" | "down" | undefined>;
+  myVotes?: Record<string, 'up' | 'down' | undefined>;
 }
 
 const START_ASKING_DEPTH = 3;
@@ -47,10 +47,10 @@ async function postDetailLoader({
   userContext: SupashipUserInfo;
 }) {
   const { data, error } = await supaClient
-    .rpc("get_single_post_with_comments", { post_id: postId })
-    .select("*");
+    .rpc('get_single_post_with_comments', { post_id: postId })
+    .select('*');
   if (error || !data || data.length === 0) {
-    throw new Error("Post not found");
+    throw new Error('Post not found');
   }
   const postMap = data.reduce((acc, post) => {
     acc[post.id] = post;
@@ -62,16 +62,16 @@ async function postDetailLoader({
     return { post, comments };
   }
   const { data: votesData } = await supaClient
-    .from("post_votes")
-    .select("*")
-    .eq("user_id", userContext.session?.user.id);
+    .from('post_votes')
+    .select('*')
+    .eq('user_id', userContext.session?.user.id);
   if (!votesData) {
     return;
   }
   const votes = votesData.reduce((acc, vote) => {
     acc[vote.post_id] = vote.vote_type;
     return acc;
-  }, {} as Record<string, "up" | "down" | undefined>);
+  }, {} as Record<string, 'up' | 'down' | undefined>);
   return { post, comments, myVotes: votes };
 }
 
@@ -106,7 +106,7 @@ export function PostView({ postId }: { postId?: string | undefined }) {
             filled={
               postDetailData.myVotes &&
               postDetailData.post &&
-              postDetailData.myVotes[postDetailData.post.id] === "up"
+              postDetailData.myVotes[postDetailData.post.id] === 'up'
             }
             enabled={!!userContext.session}
             onClick={async () => {
@@ -116,7 +116,7 @@ export function PostView({ postId }: { postId?: string | undefined }) {
               await castVote({
                 postId: postDetailData.post.id,
                 userId: userContext.session?.user.id as string,
-                voteType: "up",
+                voteType: 'up',
                 onSuccess: () => {
                   setBumper(bumper + 1);
                 },
@@ -131,7 +131,7 @@ export function PostView({ postId }: { postId?: string | undefined }) {
             filled={
               postDetailData.myVotes &&
               postDetailData.post &&
-              postDetailData.myVotes[postDetailData.post.id] === "down"
+              postDetailData.myVotes[postDetailData.post.id] === 'down'
             }
             enabled={!!userContext.session}
             onClick={async () => {
@@ -141,7 +141,7 @@ export function PostView({ postId }: { postId?: string | undefined }) {
               await castVote({
                 postId: postDetailData.post.id,
                 userId: userContext.session?.user.id as string,
-                voteType: "down",
+                voteType: 'down',
                 onSuccess: () => {
                   setBumper(bumper + 1);
                 },
@@ -152,7 +152,7 @@ export function PostView({ postId }: { postId?: string | undefined }) {
 
         <div className="grid m-2 w-full">
           <p>
-            Posted By {postDetailData.post?.author_name}{" "}
+            Posted By {postDetailData.post?.author_name}{' '}
             {postDetailData.post &&
               `${timeAgo(postDetailData.post?.created_at)} ago`}
           </p>
@@ -161,12 +161,18 @@ export function PostView({ postId }: { postId?: string | undefined }) {
             className="font-sans bg-gray-600 rounded p-4 m-4"
             data-e2e="post-content"
           >
-            {postDetailData.post?.content.split("\n").map((paragraph) => (
-              <p className="font-sans p-2">{paragraph}</p>
+            {postDetailData.post?.content.split('\n').map((paragraph, i) => (
+              <p
+                key={`${postDetailData.post?.id}-${i}`}
+                className="font-sans p-2"
+              >
+                {paragraph}
+              </p>
             ))}
           </div>
           {userContext.session && postDetailData.post && (
             <CreateComment
+              // key={postDetailData.post.id}
               parent={postDetailData.post}
               onSuccess={() => {
                 setBumper(bumper + 1);
@@ -195,7 +201,7 @@ function CommentView({
   onVoteSuccess,
 }: {
   comment: Comment;
-  myVotes: Record<string, "up" | "down" | undefined> | undefined;
+  myVotes: Record<string, 'up' | 'down' | undefined> | undefined;
   onVoteSuccess: () => void;
 }) {
   const [commenting, setCommenting] = useState(false);
@@ -219,13 +225,13 @@ function CommentView({
           <div className="flex flex-col grow-0 bg-gray-800 p-2 h-full rounded">
             <UpVote
               direction="up"
-              filled={myVotes?.[comment.id] === "up"}
+              filled={myVotes?.[comment.id] === 'up'}
               enabled={!!session}
               onClick={async () => {
                 await castVote({
                   postId: comment.id,
                   userId: session?.user.id as string,
-                  voteType: "up",
+                  voteType: 'up',
                   onSuccess: () => {
                     onVoteSuccess();
                   },
@@ -237,13 +243,13 @@ function CommentView({
             </p>
             <UpVote
               direction="down"
-              filled={myVotes?.[comment.id] === "down"}
+              filled={myVotes?.[comment.id] === 'down'}
               enabled={!!session}
               onClick={async () => {
                 await castVote({
                   postId: comment.id,
                   userId: session?.user.id as string,
-                  voteType: "down",
+                  voteType: 'down',
                   onSuccess: () => {
                     onVoteSuccess();
                   },
@@ -259,8 +265,10 @@ function CommentView({
               className="bg-gray-600 rounded p-4 m-4"
               data-e2e="comment-content"
             >
-              {comment.content.split("\n").map((paragraph) => (
-                <p className="font-sans p-2">{paragraph}</p>
+              {comment.content.split('\n').map((paragraph, i) => (
+                <p key={`${comment.id}-${i}`} className="font-sans p-2">
+                  {paragraph}
+                </p>
               ))}
             </div>
             {commenting && (
@@ -279,11 +287,11 @@ function CommentView({
                   onClick={() => setCommenting(!commenting)}
                   disabled={!session}
                 >
-                  {commenting ? "Cancel" : "Reply"}
+                  {commenting ? 'Cancel' : 'Reply'}
                 </button>
               </div>
             )}
-            {/* <p>{comment.id}</p> */}
+            <p>{comment.id}</p>
             {shouldShowChildren() ? (
               comment.comments.map((childComment) => (
                 <CommentView
@@ -323,7 +331,7 @@ function CreateComment({
   onSuccess: () => void;
 }) {
   const user = useContext(UserContext);
-  const [comment, setComment] = useState("");
+  const [comment, setComment] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   return (
     <>
@@ -333,10 +341,10 @@ function CreateComment({
         onSubmit={(event) => {
           event.preventDefault();
           supaClient
-            .rpc("create_new_comment", {
+            .rpc('create_new_comment', {
               user_id: user.session?.user.id,
               content: comment,
-              path: `${parent.path}.${parent.id.replaceAll("-", "_")}`,
+              path: `${parent.path}.${parent.id.replaceAll('-', '_')}`,
             })
             .then(({ data, error }) => {
               if (error) {
@@ -344,7 +352,7 @@ function CreateComment({
               } else {
                 onSuccess();
                 textareaRef.current?.value != null &&
-                  (textareaRef.current.value = "");
+                  (textareaRef.current.value = '');
                 const commentId = data as unknown as string;
                 let intervalId = setInterval(() => {
                   const comment = document.querySelector(
@@ -352,7 +360,7 @@ function CreateComment({
                   );
                   if (comment) {
                     clearInterval(intervalId);
-                    comment.scrollIntoView({ behavior: "smooth" });
+                    comment.scrollIntoView({ behavior: 'smooth' });
                   }
                 }, 100);
               }
@@ -422,7 +430,7 @@ function unsortedCommentsToNested(comments: DepthFirstComment[]): Comment[] {
 }
 
 function getParent(map: Record<string, Comment>, path: string): Comment {
-  const parentId = path.replace("root.", "").split(".").slice(-1)[0];
+  const parentId = path.replace('root.', '').split('.').slice(-1)[0];
   const parent = map[convertToUuid(parentId)];
   if (!parent) {
     throw new Error(`Parent not found at ${parentId}`);
@@ -431,12 +439,12 @@ function getParent(map: Record<string, Comment>, path: string): Comment {
 }
 
 function convertToUuid(path: string): string {
-  return path.replaceAll("_", "-");
+  return path.replaceAll('_', '-');
 }
 
 function getDepth(path: string): number {
-  const rootless = path.replace(".", "");
-  return rootless.split(".").filter((x) => !!x).length;
+  const rootless = path.replace('.', '');
+  return rootless.split('.').filter((x) => !!x).length;
 }
 
 // type DepthFirstComment = Omit<Comment, "comments"> & { depth: number };

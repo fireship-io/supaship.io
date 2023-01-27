@@ -1,10 +1,10 @@
-import { useContext, useEffect, useMemo, useState } from "react";
-import { Link, useLoaderData, useParams } from "react-router-dom";
-import { UserContext } from "./App";
-import { CreatePost } from "./CreatePost";
-import { supaClient } from "./supa-client";
-import { timeAgo } from "./time-ago";
-import { UpVote } from "./UpVote";
+import { useContext, useEffect, useMemo, useState } from 'react';
+import { Link, useLoaderData, useParams } from 'react-router-dom';
+import { UserContext } from './App';
+import { CreatePost } from './CreatePost';
+import { supaClient } from './supa-client';
+import { timeAgo } from './time-ago';
+import { UpVote } from './UpVote';
 
 interface PostData {
   id: string;
@@ -20,22 +20,22 @@ export function AllPosts() {
   const [bumper, setBumper] = useState(0);
   const [posts, setPosts] = useState<PostData[]>([]);
   const [myVotes, setMyVotes] = useState<
-    Record<string, "up" | "down" | undefined>
+    Record<string, 'up' | 'down' | undefined>
   >({});
   const [totalPages, setTotalPages] = useState(0);
   useEffect(() => {
     const queryPageNumber = pageNumber ? +pageNumber : 1;
     Promise.all([
       supaClient
-        .rpc("get_posts", { page_number: queryPageNumber })
-        .select("*")
+        .rpc('get_posts', { page_number: queryPageNumber })
+        .select('*')
         .then(({ data }) => {
           setPosts(data as PostData[]);
           if (session?.user) {
             supaClient
-              .from("post_votes")
-              .select("*")
-              .eq("user_id", session.user.id)
+              .from('post_votes')
+              .select('*')
+              .eq('user_id', session.user.id)
               .then(({ data: votesData }) => {
                 if (!votesData) {
                   return;
@@ -43,15 +43,15 @@ export function AllPosts() {
                 const votes = votesData.reduce((acc, vote) => {
                   acc[vote.post_id] = vote.vote_type;
                   return acc;
-                }, {} as Record<string, "up" | "down" | undefined>);
+                }, {} as Record<string, 'up' | 'down' | undefined>);
                 setMyVotes(votes);
               });
           }
         }),
       supaClient
-        .from("posts")
-        .select("*", { count: "exact", head: true })
-        .filter("path", "eq", "root")
+        .from('posts')
+        .select('*', { count: 'exact', head: true })
+        .filter('path', 'eq', 'root')
         .then(({ count }) => {
           count == null ? 0 : setTotalPages(Math.ceil(count / 10));
         }),
@@ -81,8 +81,8 @@ export function AllPosts() {
   );
 }
 
-const selectedStyles = "border-2 border-white rounded p-2 bg-gray-700";
-const notSelectedStyles = "rounded p-2 bg-gray-700";
+const selectedStyles = 'border-2 border-white rounded p-2 bg-gray-700';
+const notSelectedStyles = 'rounded p-2 bg-gray-700';
 
 function Pagination({
   totalPages,
@@ -152,7 +152,7 @@ function Post({
   onVoteSuccess,
 }: {
   postData: PostData;
-  myVote: "up" | "down" | undefined;
+  myVote: 'up' | 'down' | undefined;
   onVoteSuccess: () => void;
 }) {
   const { session } = useContext(UserContext);
@@ -162,13 +162,13 @@ function Post({
         <UpVote
           direction="up"
           // handle filling later
-          filled={myVote === "up"}
+          filled={myVote === 'up'}
           enabled={!!session}
           onClick={async () => {
             await castVote({
               postId: postData.id,
               userId: session?.user.id as string,
-              voteType: "up",
+              voteType: 'up',
               onSuccess: () => {
                 onVoteSuccess();
               },
@@ -180,13 +180,13 @@ function Post({
         </p>
         <UpVote
           direction="down"
-          filled={myVote === "down"}
+          filled={myVote === 'down'}
           enabled={!!session}
           onClick={async () => {
             await castVote({
               postId: postData.id,
               userId: session?.user.id as string,
-              voteType: "down",
+              voteType: 'down',
               onSuccess: () => {
                 onVoteSuccess();
               },
@@ -196,7 +196,7 @@ function Post({
       </div>
       <Link to={`/message-board/post/${postData.id}`} className="flex-auto">
         <p className="mt-4">
-          Posted By {postData.username} {timeAgo((postData as any).created_at)}{" "}
+          Posted By {postData.username} {timeAgo((postData as any).created_at)}{' '}
           ago
         </p>
         <h3 className="text-2xl">{postData.title}</h3>
@@ -213,23 +213,25 @@ export async function castVote({
 }: {
   postId: string;
   userId: string;
-  voteType: "up" | "down";
+  voteType: 'up' | 'down';
   voteId?: Promise<string | undefined>;
   onSuccess?: () => void;
 }) {
   const voteId = await getVoteId(userId, postId);
-  const { data, error } = voteId
-    ? await supaClient.from("post_votes").update({
-        id: voteId,
-        post_id: postId,
-        user_id: userId,
+  if (voteId) {
+    await supaClient
+      .from('post_votes')
+      .update({
         vote_type: voteType,
       })
-    : await supaClient.from("post_votes").insert({
-        post_id: postId,
-        user_id: userId,
-        vote_type: voteType,
-      });
+      .eq('id', voteId);
+  } else {
+    await supaClient.from('post_votes').insert({
+      post_id: postId,
+      user_id: userId,
+      vote_type: voteType,
+    });
+  }
   // handle error
   onSuccess();
 }
@@ -239,10 +241,10 @@ export async function getVoteId(
   postId: string
 ): Promise<string | undefined> {
   const { data, error } = await supaClient
-    .from("post_votes")
-    .select("id")
-    .eq("user_id", userId)
-    .eq("post_id", postId)
+    .from('post_votes')
+    .select('id')
+    .eq('user_id', userId)
+    .eq('post_id', postId)
     .single();
   return data?.id || undefined;
 }

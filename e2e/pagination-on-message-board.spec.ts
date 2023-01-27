@@ -1,35 +1,47 @@
-import test, { expect, Page } from "@playwright/test";
+import test, { expect, Page } from '@playwright/test';
 import {
   createComment,
   createPost,
+  createPostsInBulk,
+  getCurrentUserId,
   login,
   setupE2eTest,
   signUp,
-} from "./utils";
+} from './utils';
 
-const testUserEmail = "test@test.io";
-const testUserPassword = "test123567";
-const testUserName = "test";
+const testUserEmail = 'test@test.io';
+const testUserPassword = 'test123567';
+const testUserName = 'test';
 
-test.describe("Pagination", () => {
-  test.setTimeout(45000);
+test.describe('Pagination', () => {
   test.beforeEach(async ({ page }) => {
     await setupE2eTest();
-    page.goto("http://localhost:5173");
+    page.goto('http://localhost:5173');
     await signUp(page, testUserEmail, testUserPassword, testUserName);
   });
 
-  test("basic paging for 30 posts", async ({ page }) => {
+  test('basic paging for 30 posts', async ({ page }) => {
     const numberOfPostsToMake = 30;
+    // for (let i = 0; i < numberOfPostsToMake; i++) {
+    //   const post = await createPost(
+    //     page,
+    //     `Test Post #${i}`,
+    //     "This is a test post"
+    //   );
+    // }
+    const posts: { title: string; contents: string; userId: string }[] = [];
+    const userId = (await getCurrentUserId(page)) || '';
     for (let i = 0; i < numberOfPostsToMake; i++) {
-      const post = await createPost(
-        page,
-        `Test Post #${i}`,
-        "This is a test post"
-      );
+      posts.push({
+        title: `Test Post #${i}`,
+        contents: 'This is a test post',
+        userId,
+      });
     }
+    await createPostsInBulk(posts);
+
     const messageBoardLink = page
-      .locator("a", { hasText: "message board" })
+      .locator('a', { hasText: 'message board' })
       .first();
     await messageBoardLink.click();
     for (let i = 1; i <= 3; i++) {
@@ -39,24 +51,34 @@ test.describe("Pagination", () => {
     const secondPageLink = page.locator(`a[data-e2e="page-2"]`);
     await secondPageLink.click();
     for (let i = 0; i < 10; i++) {
-      const postLocator = page.locator("h3", {
+      const postLocator = page.locator('h3', {
         hasText: `Test post #${19 - i}`,
       });
       await expect(postLocator).toHaveCount(1);
     }
   });
 
-  test("adv paging for 120 posts", async ({ page }) => {
+  test('adv paging for 120 posts', async ({ page }) => {
     const numberOfPostsToMake = 120;
+    // for (let i = 0; i < numberOfPostsToMake; i++) {
+    //   const post = await createPost(
+    //     page,
+    //     `Test Post #${i}`,
+    //     'This is a test post'
+    //   );
+    // }
+    const posts: { title: string; contents: string; userId: string }[] = [];
+    const userId = (await getCurrentUserId(page)) || '';
     for (let i = 0; i < numberOfPostsToMake; i++) {
-      const post = await createPost(
-        page,
-        `Test Post #${i}`,
-        "This is a test post"
-      );
+      posts.push({
+        title: `Test Post #${i}`,
+        contents: 'This is a test post',
+        userId,
+      });
     }
+    await createPostsInBulk(posts);
     const messageBoardLink = page
-      .locator("a", { hasText: "message board" })
+      .locator('a', { hasText: 'message board' })
       .first();
     await messageBoardLink.click();
     async function assertCorrectPageButtonsShown({

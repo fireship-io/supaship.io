@@ -1,14 +1,30 @@
-import { useContext, useState } from "react";
-import { Link } from "react-router-dom";
-import { UserContext } from "./App";
-import Dialog from "./Dialog";
-import { EmailListSignup } from "./EmailListSignup";
-import Login from "./Login";
-import UserMenu from "./UserMenu";
+import { useContext, useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { UserContext } from './App';
+import Dialog from './Dialog';
+import { EmailListSignup } from './EmailListSignup';
+import Login from './Login';
+import { supaClient } from './supa-client';
+import UserMenu from './UserMenu';
+
+interface Notification {
+  created_at: string;
+  id: string;
+  notification_text: string;
+  post_id: string;
+  read_at: string;
+  user_id: string;
+}
+interface NotificationPayload {
+  eventType: 'UPDATE' | 'DELETE' | 'INSERT';
+  new?: Notification;
+  old?: Notification;
+}
 
 export default function NavBar() {
   const { session } = useContext(UserContext);
   const [showProDialog, setShowProDialog] = useState(false);
+  const notifications = useNotifications();
   return (
     <>
       <nav className="flex justify-between align-center max-w-screen-2xl mx-auto px-3 md:px-8 p-6 md:p-8 text-gray1 w-full">
@@ -145,7 +161,7 @@ export default function NavBar() {
               </h2>
               <p className="text-center">
                 Expect the course to drop sometime around Thanksgiving 2022. In
-                the meantime - you can checkout the{" "}
+                the meantime - you can checkout the{' '}
                 <a
                   href="https://fireship.io/courses"
                   target="_blank"
@@ -153,7 +169,7 @@ export default function NavBar() {
                   className="text-green-400 hover:drop-shadow-[0_0_9px_rgba(34,197,94,0.9)] transition duration-500"
                 >
                   sweet, sweet courses
-                </a>{" "}
+                </a>{' '}
                 currently available at Fireship Pro:
               </p>
               <a
@@ -201,6 +217,9 @@ export default function NavBar() {
           </>
         }
       />
+      {notifications.map((notification) => (
+        <pre key={notification.id}>{JSON.stringify(notification, null, 2)}</pre>
+      ))}
     </>
   );
 }
@@ -230,4 +249,42 @@ function YoutubeChannelLink({
       <h3 className="text-center w-32">{channelName}</h3>
     </a>
   );
+}
+
+function useNotifications() {
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  useEffect(() => {
+    console.log('here');
+    const fetchNotifications = async () => {
+      const res = await supaClient.from('notifications').select('*');
+      setNotifications(res.data || []);
+      // debugger;
+      // supaClient
+      //   .channel(`public:notifications`)
+      //   .on(
+      //     'postgres_changes',
+      //     {
+      //       event: 'INSERT' as any,
+      //       schema: 'public',
+      //       table: 'notifications',
+      //     },
+      //     (payload: any) => {
+      //       debugger;
+      //       const temp = payload as NotificationPayload;
+      //       if (temp.eventType === 'INSERT') {
+      //         // setNotifications([...notifications, temp.new!]);
+      //       } else if (temp.eventType === 'DELETE') {
+      //         setNotifications(
+      //           notifications.filter((n) => n.id !== temp.old?.id)
+      //         );
+      //       } else if (temp.eventType === 'UPDATE') {
+      //         setNotifications([...notifications, temp.new!]); // WRONG!
+      //       }
+      //     }
+      //   )
+      //   .subscribe();
+    };
+    fetchNotifications();
+  }, []);
+  return notifications;
 }
