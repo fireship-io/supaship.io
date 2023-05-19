@@ -1,12 +1,10 @@
 import { createContext } from "react";
 import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 import { AllPosts } from "./AllPosts";
-import "./App.css";
 import Home from "./Home";
 import MessageBoard from "./MessageBoard";
 import NavBar from "./NavBar";
 import { PostView } from "./Post";
-import PrivacyPolicy from "./PrivacyPolicy";
 import { SupashipUserInfo, useSession } from "./use-session";
 import { Welcome, welcomeLoader } from "./Welcome";
 
@@ -35,7 +33,6 @@ export const router = createBrowserRouter([
         element: <Welcome />,
         loader: welcomeLoader,
       },
-      { path: "privacy-policy", element: <PrivacyPolicy /> },
     ],
   },
 ]);

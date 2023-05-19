@@ -1,4 +1,3 @@
-import { EmailListSignup } from "./EmailListSignup";
 import { PostView } from "./Post";
 
 export default function Home() {

@@ -9,8 +9,6 @@ export default function Login() {
   const [authMode, setAuthMode] = useState<"sign_in" | "sign_up">("sign_in");
   const { session } = useContext(UserContext);
 
-  const dialog = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     if (session?.user) {
       setShowModal(false);

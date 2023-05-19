@@ -2,7 +2,6 @@ import { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import { UserContext } from "./App";
 import Dialog from "./Dialog";
-import { EmailListSignup } from "./EmailListSignup";
 import Login from "./Login";
 import UserMenu from "./UserMenu";
 
@@ -194,7 +193,6 @@ export default function NavBar() {
                 />
               </div>
             </div>
-            <EmailListSignup />
             <button className="mt-8" onClick={() => setShowProDialog(false)}>
               Close
             </button>
