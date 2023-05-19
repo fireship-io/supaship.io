@@ -219,19 +219,23 @@ export async function castVote({
 }) {
   const voteId = await getVoteId(userId, postId);
   const { data, error } = voteId
-    ? await supaClient.from("post_votes").update({
-        id: voteId,
-        post_id: postId,
-        user_id: userId,
-        vote_type: voteType,
-      })
+    ? await supaClient
+        .from("post_votes")
+        .update({
+          post_id: postId,
+          user_id: userId,
+          vote_type: voteType,
+        })
+        .eq("id", voteId)
     : await supaClient.from("post_votes").insert({
         post_id: postId,
         user_id: userId,
         vote_type: voteType,
       });
   // handle error
-  onSuccess();
+  if (!error) {
+    onSuccess();
+  }
 }
 
 export async function getVoteId(

@@ -1,10 +1,10 @@
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
-import { useLoaderData, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { castVote } from "./AllPosts";
 import { UserContext } from "./App";
+import { UpVote } from "./UpVote";
 import { supaClient } from "./supa-client";
 import { timeAgo } from "./time-ago";
-import { UpVote } from "./UpVote";
 import { SupashipUserInfo } from "./use-session";
 
 export interface Post {
@@ -61,11 +61,11 @@ async function postDetailLoader({
   if (!userContext.session?.user) {
     return { post, comments };
   }
-  const { data: votesData } = await supaClient
+  const { data: votesData, error: getVotesError } = await supaClient
     .from("post_votes")
     .select("*")
     .eq("user_id", userContext.session?.user.id);
-  if (!votesData) {
+  if (getVotesError || !votesData) {
     return;
   }
   const votes = votesData.reduce((acc, vote) => {
