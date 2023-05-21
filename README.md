@@ -48,7 +48,7 @@ yarn build
 
 ## Deploy
 
-Manual. Run build and then drop `/dist` into Netlify buccket
+Manual. Run build and then drop `/dist` into Netlify bucket
 (Will automate later)
 
 ## e2e
