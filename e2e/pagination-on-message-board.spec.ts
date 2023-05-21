@@ -2,6 +2,7 @@ import test, { expect, Page } from "@playwright/test";
 import {
   createComment,
   createPost,
+  createPostAsAdmin,
   login,
   setupE2eTest,
   signUp,
@@ -22,10 +23,10 @@ test.describe("Pagination", () => {
   test("basic paging for 30 posts", async ({ page }) => {
     const numberOfPostsToMake = 30;
     for (let i = 0; i < numberOfPostsToMake; i++) {
-      const post = await createPost(
-        page,
+      await createPostAsAdmin(
         `Test Post #${i}`,
-        "This is a test post"
+        "This is a test post",
+        testUserEmail
       );
     }
     const messageBoardLink = page
@@ -49,10 +50,10 @@ test.describe("Pagination", () => {
   test("adv paging for 120 posts", async ({ page }) => {
     const numberOfPostsToMake = 120;
     for (let i = 0; i < numberOfPostsToMake; i++) {
-      const post = await createPost(
-        page,
+      await createPostAsAdmin(
         `Test Post #${i}`,
-        "This is a test post"
+        "This is a test post",
+        testUserEmail
       );
     }
     const messageBoardLink = page

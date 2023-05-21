@@ -1,14 +1,14 @@
 import { createContext } from "react";
 import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 import { AllPosts } from "./AllPosts";
-import "./App.css";
 import Home from "./Home";
 import MessageBoard from "./MessageBoard";
 import NavBar from "./NavBar";
 import { PostView } from "./Post";
-import PrivacyPolicy from "./PrivacyPolicy";
 import { SupashipUserInfo, useSession } from "./use-session";
 import { Welcome, welcomeLoader } from "./Welcome";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 export const router = createBrowserRouter([
   {
@@ -35,7 +35,6 @@ export const router = createBrowserRouter([
         element: <Welcome />,
         loader: welcomeLoader,
       },
-      { path: "privacy-policy", element: <PrivacyPolicy /> },
     ],
   },
 ]);
@@ -45,8 +44,15 @@ export const UserContext = createContext<SupashipUserInfo>({
   profile: null,
 });
 
+const client = new QueryClient();
+
 function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <QueryClientProvider client={client}>
+      <RouterProvider router={router} />
+      <ReactQueryDevtools />
+    </QueryClientProvider>
+  );
 }
 
 function Layout() {

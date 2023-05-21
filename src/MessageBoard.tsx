@@ -1,10 +1,7 @@
 import { useContext } from "react";
 import { Link, Outlet } from "react-router-dom";
-import { AllPosts } from "./AllPosts";
 import { UserContext } from "./App";
-import { CreatePost } from "./CreatePost";
 import Login from "./Login";
-import UserMenu from "./UserMenu";
 
 export default function MessageBoard() {
   const userProfile = useContext(UserContext);

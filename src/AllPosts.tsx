@@ -1,12 +1,13 @@
-import { useContext, useEffect, useMemo, useState } from "react";
-import { Link, useLoaderData, useParams } from "react-router-dom";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useContext } from "react";
+import { Link, useParams } from "react-router-dom";
 import { UserContext } from "./App";
 import { CreatePost } from "./CreatePost";
+import { UpVote } from "./UpVote";
 import { supaClient } from "./supa-client";
 import { timeAgo } from "./time-ago";
-import { UpVote } from "./UpVote";
 
-interface PostData {
+export interface PostData {
   id: string;
   title: string;
   score: number;
@@ -14,49 +15,62 @@ interface PostData {
   user_id: string;
 }
 
+function usePageCountQuery() {
+  return useQuery({
+    queryKey: ["posts", "page-count"],
+    queryFn: async () => {
+      const { count } = await supaClient
+        .from("posts")
+        .select("*", { count: "exact", head: true })
+        .filter("path", "eq", "root");
+      return count == null ? 0 : Math.ceil(count / 10);
+    },
+  });
+}
+
+function useUsersPostVotes() {
+  const { session } = useContext(UserContext);
+  return useQuery({
+    queryKey: ["posts", "user-votes", session?.user?.id],
+    queryFn: async (): Promise<Record<string, "up" | "down" | undefined>> => {
+      const { data: votesData } = await supaClient
+        .from("post_votes")
+        .select("*")
+        .eq("user_id", session?.user.id);
+      if (!votesData) {
+        return {} as Record<string, "up" | "down" | undefined>;
+      }
+      const votes = votesData.reduce((acc, vote) => {
+        acc[vote.post_id] = vote.vote_type;
+        return acc;
+      }, {} as Record<string, "up" | "down" | undefined>);
+      return votes;
+    },
+    enabled: !!session?.user,
+  });
+}
+
+function useGetPost() {
+  const { pageNumber } = useParams();
+  return useQuery({
+    queryKey: ["posts", "page", pageNumber],
+    queryFn: async () => {
+      const queryPageNumber = pageNumber ? +pageNumber : 1;
+      const { data } = await supaClient
+        .rpc("get_posts", { page_number: queryPageNumber })
+        .select("*");
+      return data as PostData[];
+    },
+  });
+}
+
 export function AllPosts() {
   const { session } = useContext(UserContext);
   const { pageNumber } = useParams();
-  const [bumper, setBumper] = useState(0);
-  const [posts, setPosts] = useState<PostData[]>([]);
-  const [myVotes, setMyVotes] = useState<
-    Record<string, "up" | "down" | undefined>
-  >({});
-  const [totalPages, setTotalPages] = useState(0);
-  useEffect(() => {
-    const queryPageNumber = pageNumber ? +pageNumber : 1;
-    Promise.all([
-      supaClient
-        .rpc("get_posts", { page_number: queryPageNumber })
-        .select("*")
-        .then(({ data }) => {
-          setPosts(data as PostData[]);
-          if (session?.user) {
-            supaClient
-              .from("post_votes")
-              .select("*")
-              .eq("user_id", session.user.id)
-              .then(({ data: votesData }) => {
-                if (!votesData) {
-                  return;
-                }
-                const votes = votesData.reduce((acc, vote) => {
-                  acc[vote.post_id] = vote.vote_type;
-                  return acc;
-                }, {} as Record<string, "up" | "down" | undefined>);
-                setMyVotes(votes);
-              });
-          }
-        }),
-      supaClient
-        .from("posts")
-        .select("*", { count: "exact", head: true })
-        .filter("path", "eq", "root")
-        .then(({ count }) => {
-          count == null ? 0 : setTotalPages(Math.ceil(count / 10));
-        }),
-    ]);
-  }, [session, bumper, pageNumber]);
+  const { data: totalPages = 0 } = usePageCountQuery();
+  const { data: myVotes } = useUsersPostVotes();
+  const { data: posts } = useGetPost();
+  const queryClient = useQueryClient();
 
   return (
     <>
@@ -72,7 +86,9 @@ export function AllPosts() {
             postData={post}
             myVote={myVotes?.[post.id] || undefined}
             onVoteSuccess={() => {
-              setBumper(bumper + 1);
+              queryClient.invalidateQueries({
+                queryKey: ["posts"],
+              });
             }}
           />
         ))}
@@ -219,19 +235,23 @@ export async function castVote({
 }) {
   const voteId = await getVoteId(userId, postId);
   const { data, error } = voteId
-    ? await supaClient.from("post_votes").update({
-        id: voteId,
-        post_id: postId,
-        user_id: userId,
-        vote_type: voteType,
-      })
+    ? await supaClient
+        .from("post_votes")
+        .update({
+          post_id: postId,
+          user_id: userId,
+          vote_type: voteType,
+        })
+        .eq("id", voteId)
     : await supaClient.from("post_votes").insert({
         post_id: postId,
         user_id: userId,
         vote_type: voteType,
       });
   // handle error
-  onSuccess();
+  if (!error) {
+    onSuccess();
+  }
 }
 
 export async function getVoteId(

@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { router, UserContext } from "./App";
+import { UserContext } from "./App";
 import { supaClient } from "./supa-client";
 
 export interface CreatePostProps {
