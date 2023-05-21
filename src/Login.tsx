@@ -1,19 +1,17 @@
-import { useContext, useEffect, useRef, useState } from "react";
-import { supaClient } from "./supa-client";
 import { Auth, ThemeSupa } from "@supabase/auth-ui-react";
+import { useContext, useState } from "react";
 import { UserContext } from "./App";
 import Dialog from "./Dialog";
+import { supaClient } from "./supa-client";
 
 export default function Login() {
   const [showModal, setShowModal] = useState(false);
   const [authMode, setAuthMode] = useState<"sign_in" | "sign_up">("sign_in");
   const { session } = useContext(UserContext);
 
-  useEffect(() => {
-    if (session?.user) {
-      setShowModal(false);
-    }
-  }, [session]);
+  if (session?.user) {
+    setShowModal(false);
+  }
 
   const setReturnPath = () => {
     localStorage.setItem("returnPath", window.location.pathname);

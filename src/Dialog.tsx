@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 export interface DialogProps {
   allowClose?: boolean;
@@ -16,11 +16,9 @@ export default function Dialog({
   const [showModal, setShowModal] = useState(open);
   const dialog = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (open !== showModal) {
-      setShowModal(open);
-    }
-  }, [open]);
+  if (open !== showModal) {
+    setShowModal(open);
+  }
 
   function updateDialogState(open: boolean) {
     setShowModal(open);

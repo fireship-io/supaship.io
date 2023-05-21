@@ -77,6 +77,24 @@ export async function login(
   await expect(usernameMention).toHaveCount(1);
 }
 
+export async function createPostAsAdmin(
+  title: string,
+  content: string,
+  userEmail: string
+) {
+  const supaclient = createClient(
+    "http://localhost:54321",
+    `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU`
+  );
+  const { data } = await supaclient.auth.admin.listUsers();
+  const targetUserId = data.users.find((user) => user.email === userEmail)?.id;
+  await supaclient.rpc("create_new_post", {
+    title,
+    content,
+    userId: targetUserId,
+  });
+}
+
 export async function createPost(page: Page, title: string, contents: string) {
   await page.goto("http://localhost:5173/message-board/1");
   const postTitleInput = page.locator(`input[name="title"]`);
@@ -87,23 +105,23 @@ export async function createPost(page: Page, title: string, contents: string) {
   await page.keyboard.press("Enter");
   await page.waitForURL("http://localhost:5173/message-board/post/*");
   const post = page.locator("h3", { hasText: title });
-  await new Promise<void>((res) =>
-    setTimeout(() => {
-      res();
-    }, 100)
-  );
-  const count = await post.count();
-  if (!count) {
-    await page.reload();
-    if ((await post.count()) === 0) {
-      await new Promise<void>((res) =>
-        setTimeout(() => {
-          res();
-        }, 100)
-      );
-      await page.reload();
-    }
-  }
+  // await new Promise<void>((res) =>
+  //   setTimeout(() => {
+  //     res();
+  //   }, 100)
+  // );
+  // const count = await post.count();
+  // if (!count) {
+  //   await page.reload();
+  //   if ((await post.count()) === 0) {
+  //     await new Promise<void>((res) =>
+  //       setTimeout(() => {
+  //         res();
+  //       }, 100)
+  //     );
+  //     await page.reload();
+  //   }
+  // }
   await expect(post).toHaveCount(1);
   return post;
 }

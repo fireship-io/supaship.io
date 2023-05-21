@@ -1,6 +1,7 @@
-import { useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useContext, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import { castVote } from "./AllPosts";
+import { PostData, castVote } from "./AllPosts";
 import { UserContext } from "./App";
 import { UpVote } from "./UpVote";
 import { supaClient } from "./supa-client";
@@ -16,6 +17,17 @@ export interface Post {
   created_at: string;
   path: string;
   comments: Comment[];
+}
+
+function postFromPostData(postData: PostData): Post {
+  return {
+    ...postData,
+    author_name: "",
+    comments: [],
+    path: "",
+    created_at: "",
+    content: (postData as any).content || "",
+  };
 }
 
 export interface Comment {
@@ -46,13 +58,14 @@ async function postDetailLoader({
   params: { postId: string };
   userContext: SupashipUserInfo;
 }) {
-  const { data, error } = await supaClient
+  const { data: temp, error } = await supaClient
     .rpc("get_single_post_with_comments", { post_id: postId })
     .select("*");
+  const data = temp as Post[];
   if (error || !data || data.length === 0) {
     throw new Error("Post not found");
   }
-  const postMap = data.reduce((acc, post) => {
+  const postMap: Record<string, Post> = data.reduce((acc, post) => {
     acc[post.id] = post;
     return acc;
   }, {} as Record<string, Post>);
@@ -68,31 +81,53 @@ async function postDetailLoader({
   if (getVotesError || !votesData) {
     return;
   }
-  const votes = votesData.reduce((acc, vote) => {
-    acc[vote.post_id] = vote.vote_type;
-    return acc;
-  }, {} as Record<string, "up" | "down" | undefined>);
+  const votes: Record<string, "up" | "down" | undefined> = votesData.reduce(
+    (acc, vote) => {
+      acc[vote.post_id] = vote.vote_type;
+      return acc;
+    },
+    {}
+  );
   return { post, comments, myVotes: votes };
 }
 
-export function PostView({ postId }: { postId?: string | undefined }) {
-  const userContext = useContext(UserContext);
+function usePostDetail(postId: string | undefined) {
   const params = useParams() as { postId: string };
-  const [postDetailData, setPostDetailData] = useState<PostDetailData>({
-    post: null,
-    comments: [],
+  const actualParams = postId ? { postId } : params;
+  const userContext = useContext(UserContext);
+  const queryClient = useQueryClient();
+  return useQuery({
+    queryKey: ["post-detail", actualParams, userContext.session?.user?.id],
+    queryFn: async () => {
+      return postDetailLoader({
+        params: actualParams,
+        userContext,
+      });
+    },
+    initialData: () => {
+      const posts = queryClient.getQueriesData<PostData[]>({
+        queryKey: ["posts", "page"],
+      });
+      const target = posts
+        .flatMap(([_, x]) => x)
+        .find((x) => x?.id === actualParams.postId);
+      return target
+        ? { post: postFromPostData(target), comments: [] as Post[] }
+        : undefined;
+    },
   });
-  const [bumper, setBumper] = useState(0);
-  useEffect(() => {
-    postDetailLoader({
-      params: postId ? { postId } : params,
-      userContext,
-    }).then((newPostDetailData) => {
-      if (newPostDetailData) {
-        setPostDetailData(newPostDetailData);
-      }
-    });
-  }, [userContext, params, bumper]);
+}
+
+export function PostView({ postId }: { postId?: string | undefined }) {
+  const queryClient = useQueryClient();
+  const userContext = useContext(UserContext);
+  const postDetailQuery = usePostDetail(postId);
+  const postDetailData: PostDetailData =
+    postDetailQuery.data ||
+    ({
+      post: null,
+      comments: [],
+    } as any);
   const nestedComments = useMemo(
     () => unsortedCommentsToNested(postDetailData.comments),
     [postDetailData]
@@ -118,7 +153,7 @@ export function PostView({ postId }: { postId?: string | undefined }) {
                 userId: userContext.session?.user.id as string,
                 voteType: "up",
                 onSuccess: () => {
-                  setBumper(bumper + 1);
+                  queryClient.invalidateQueries({ queryKey: ["post-detail"] });
                 },
               });
             }}
@@ -143,7 +178,7 @@ export function PostView({ postId }: { postId?: string | undefined }) {
                 userId: userContext.session?.user.id as string,
                 voteType: "down",
                 onSuccess: () => {
-                  setBumper(bumper + 1);
+                  queryClient.invalidateQueries({ queryKey: ["post-detail"] });
                 },
               });
             }}
@@ -169,7 +204,7 @@ export function PostView({ postId }: { postId?: string | undefined }) {
             <CreateComment
               parent={postDetailData.post}
               onSuccess={() => {
-                setBumper(bumper + 1);
+                queryClient.invalidateQueries({ queryKey: ["post-detail"] });
               }}
             />
           )}
@@ -179,7 +214,7 @@ export function PostView({ postId }: { postId?: string | undefined }) {
               comment={comment}
               myVotes={postDetailData.myVotes}
               onVoteSuccess={() => {
-                setBumper(bumper + 1);
+                queryClient.invalidateQueries({ queryKey: ["post-detail"] });
               }}
             />
           ))}

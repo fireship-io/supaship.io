@@ -7,6 +7,8 @@ import NavBar from "./NavBar";
 import { PostView } from "./Post";
 import { SupashipUserInfo, useSession } from "./use-session";
 import { Welcome, welcomeLoader } from "./Welcome";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 export const router = createBrowserRouter([
   {
@@ -42,8 +44,15 @@ export const UserContext = createContext<SupashipUserInfo>({
   profile: null,
 });
 
+const client = new QueryClient();
+
 function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <QueryClientProvider client={client}>
+      <RouterProvider router={router} />
+      <ReactQueryDevtools />
+    </QueryClientProvider>
+  );
 }
 
 function Layout() {

@@ -13,6 +13,8 @@
   "dependencies": {
     "@supabase/auth-ui-react": "^0.2.6",
     "@supabase/supabase-js": "^2.22.0",
+    "@tanstack/react-query": "^5.0.0-alpha.34",
+    "@tanstack/react-query-devtools": "^5.0.0-alpha.34",
     "node-sass": "^7.0.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
